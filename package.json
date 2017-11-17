@@ -1,0 +1,10 @@
+{
+  "name": "@scola/worker",
+  "version": "0.0.0",
+  "description": "Worker",
+  "repository": "github:scola84/worker",
+  "author": "M.C. van den Boogaart <scola@kvdb.name>",
+  "license": "MIT",
+  "main": "./index.js",
+  "jsnext:main": "./index.js"
+}
