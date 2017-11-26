@@ -28,6 +28,12 @@ export default class Manager extends Worker {
     }
   }
 
+  fail(box, error, callback) {
+    if (this._worker) {
+      this._worker.err(box._original || box, error, callback);
+    }
+  }
+
   manage(name, worker) {
     this._workers[name] = worker;
     return worker.connect(this);
