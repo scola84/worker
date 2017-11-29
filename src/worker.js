@@ -7,6 +7,7 @@ export default class Worker {
     this._act = methods.act;
     this._decide = methods.decide;
     this._err = methods.err;
+    this._filter = methods.filter;
 
     this._parent = null;
     this._worker = null;
@@ -45,6 +46,14 @@ export default class Worker {
     if (this._worker) {
       this._worker.err(box, error, callback);
     }
+  }
+
+  filter(box, data, context) {
+    if (this._filter) {
+      return this._filter(box, data, context);
+    }
+
+    return data;
   }
 
   find(compare, up = false) {
