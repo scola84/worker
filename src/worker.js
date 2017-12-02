@@ -8,6 +8,7 @@ export default class Worker {
     this._decide = methods.decide;
     this._err = methods.err;
     this._filter = methods.filter;
+    this._merge = methods.merge;
 
     this._parent = null;
     this._worker = null;
@@ -88,9 +89,15 @@ export default class Worker {
 
   inject(worker) {
     worker.connect(this._worker);
-    this.connect(worker);
+    return this.connect(worker);
+  }
 
-    return worker;
+  merge(box, data, result) {
+    if (this._merge) {
+      this._merge(box, data, result);
+    } else {
+      data.object = result;
+    }
   }
 
   parent(parent) {
