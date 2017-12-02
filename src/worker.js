@@ -92,11 +92,11 @@ export default class Worker {
     return this.connect(worker);
   }
 
-  merge(box, data, result) {
+  merge(box, data, object) {
     if (this._merge) {
-      this._merge(box, data, result);
+      this._merge(box, data, object);
     } else {
-      data.object = result;
+      data.object = object;
     }
   }
 
