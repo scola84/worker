@@ -95,8 +95,6 @@ export default class Worker {
   merge(box, data, object) {
     if (this._merge) {
       this._merge(box, data, object);
-    } else {
-      data.object = object;
     }
   }
 
