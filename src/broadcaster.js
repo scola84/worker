@@ -1,14 +1,16 @@
 import Worker from './worker';
 
 export default class Broadcaster extends Worker {
-  constructor(methods) {
-    super(methods);
+  constructor(options = {}) {
+    super(options);
 
     this._unify = null;
     this._workers = [];
+
+    this.unify(options.unify);
   }
 
-  unify(value) {
+  unify(value = null) {
     this._unify = value;
     return this;
   }
