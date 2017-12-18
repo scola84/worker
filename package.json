@@ -6,5 +6,8 @@
   "author": "M.C. van den Boogaart <scola@kvdb.name>",
   "license": "MIT",
   "main": "./index.js",
-  "jsnext:main": "./index.js"
+  "jsnext:main": "./index.js",
+  "dependencies": {
+    "async": "^2.6.0"
+  }
 }
