@@ -27,9 +27,9 @@ export default class Worker {
     return worker;
   }
 
-  decide(box) {
+  decide(box, data) {
     if (this._decide) {
-      return this._decide(box);
+      return this._decide(box, data);
     }
 
     return true;
