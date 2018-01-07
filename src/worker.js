@@ -2,7 +2,7 @@ let id = 0;
 
 export default class Worker {
   constructor(methods = {}) {
-    this._id = 'worker_' + (++id);
+    this._id = ++id;
 
     this._act = methods.act;
     this._decide = methods.decide;

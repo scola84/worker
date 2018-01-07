@@ -4,6 +4,8 @@ export default class Streamer extends Worker {
   constructor(methods = {}) {
     super(methods);
 
+    this._name = ['stream', this._id].join('_');
+
     this._data = methods.data;
     this._end = methods.end;
     this._stream = methods.stream;
@@ -41,7 +43,7 @@ export default class Streamer extends Worker {
   }
 
   throttle(box, resume) {
-    const streamer = box[this._id];
+    const streamer = box[this._name];
 
     if (typeof streamer === 'undefined') {
       return;
@@ -97,7 +99,7 @@ export default class Streamer extends Worker {
   }
 
   _createStream(box) {
-    let streamer = box[this._id];
+    let streamer = box[this._name];
 
     if (typeof streamer === 'undefined') {
       streamer = {
@@ -108,7 +110,7 @@ export default class Streamer extends Worker {
         write: false
       };
 
-      box[this._id] = streamer;
+      box[this._name] = streamer;
 
       if (streamer.stream.listenerCount('error') === 0) {
         streamer.stream.once('error', (error) => {
@@ -132,22 +134,22 @@ export default class Streamer extends Worker {
   }
 
   _pause(box, callback = () => {}) {
-    box[this._id].paused = true;
+    box[this._name].paused = true;
     callback(box, false);
 
-    box[this._id].stream.once('drain', () => {
+    box[this._name].stream.once('drain', () => {
       callback(box, true);
       this._resume(box, callback);
     });
   }
 
   _resume(box, callback) {
-    box[this._id].paused = false;
+    box[this._name].paused = false;
 
-    if (box[this._id].data.length === 0) {
+    if (box[this._name].data.length === 0) {
       return;
     }
 
-    this.write(box, box[this._id].data.shift(), callback);
+    this.write(box, box[this._name].data.shift(), callback);
   }
 }
