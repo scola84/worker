@@ -5,7 +5,7 @@ export default class Manager extends Worker {
     super(methods);
 
     this._names = methods.names;
-    this._workers = {};
+    this._pool = {};
   }
 
   act(box, data, callback) {
@@ -19,7 +19,7 @@ export default class Manager extends Worker {
       return;
     }
 
-    const worker = this._workers[box._names.shift()];
+    const worker = this._pool[box._names.shift()];
 
     if (worker) {
       worker.handle(box, data, callback);
@@ -35,7 +35,7 @@ export default class Manager extends Worker {
   }
 
   manage(name, worker) {
-    this._workers[name] = worker;
+    this._pool[name] = worker;
     return worker.connect(this);
   }
 

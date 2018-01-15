@@ -1,17 +1,56 @@
 let id = 0;
 
 export default class Worker {
-  constructor(methods = {}) {
-    this._id = ++id;
-
-    this._act = methods.act;
-    this._decide = methods.decide;
-    this._err = methods.err;
-    this._filter = methods.filter;
-    this._merge = methods.merge;
-
+  constructor(options = {}) {
+    this._act = null;
+    this._decide = null;
+    this._err = null;
+    this._filter = null;
+    this._id = null;
+    this._merge = null;
     this._parent = null;
     this._worker = null;
+
+    this.setAct(options.act);
+    this.setDecide(options.decide);
+    this.setErr(options.err);
+    this.setId(options.id);
+    this.setFilter(options.filter);
+    this.setMerge(options.merge);
+  }
+
+  getId() {
+    return this._id;
+  }
+
+  setAct(value = null) {
+    this._act = value;
+    return this;
+  }
+
+  setDecide(value = null) {
+    this._decide = value;
+    return this;
+  }
+
+  setErr(value = null) {
+    this._err = value;
+    return this;
+  }
+
+  setFilter(value = null) {
+    this._filter = value;
+    return this;
+  }
+
+  setId(value = ++id) {
+    this._id = value;
+    return this;
+  }
+
+  setMerge(value = null) {
+    this._merge = value;
+    return this;
   }
 
   act(box, data, callback) {
@@ -63,7 +102,9 @@ export default class Worker {
     }
 
     if (up === false) {
-      if (this._worker) {
+      if (this._workers) {
+        return this._find(compare);
+      } else if (this._worker) {
         return this._worker.find(compare);
       }
     } else if (this._parent) {

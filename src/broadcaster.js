@@ -29,4 +29,14 @@ export default class Broadcaster extends Worker {
       this._workers[i].handle(box, data, callback);
     }
   }
+
+  _find(compare) {
+    let found = null;
+
+    this._workers.forEach((worker) => {
+      found = found || worker.find(compare);
+    });
+
+    return found;
+  }
 }

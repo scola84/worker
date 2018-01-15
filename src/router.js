@@ -29,4 +29,14 @@ export default class Router extends Worker {
     this.connect(name, input);
     return output;
   }
+
+  _find(compare) {
+    let found = null;
+
+    Object.keys(this._workers).forEach((name) => {
+      found = found || this._workers[name].find(compare);
+    });
+
+    return found;
+  }
 }
