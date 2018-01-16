@@ -9,8 +9,7 @@ export default class Dealer extends Broadcaster {
   pass(box, data, callback) {
     this._workers[this._pointer].handle(box, data, callback);
 
-    this._pointer =
-      this._pointer === this._workers.length - 1 ?
+    this._pointer = this._pointer === this._workers.length - 1 ?
       0 : this._pointer + 1;
   }
 }
