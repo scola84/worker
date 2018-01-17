@@ -53,6 +53,11 @@ export default class Worker {
     return this;
   }
 
+  setParent(value = null) {
+    this._parent = value;
+    return this;
+  }
+
   act(box, data, callback) {
     if (this._act) {
       this._act(box, data, callback);
@@ -62,7 +67,7 @@ export default class Worker {
   }
 
   connect(worker) {
-    this._worker = worker.parent(this);
+    this._worker = worker.setParent(this);
     return worker;
   }
 
@@ -139,11 +144,6 @@ export default class Worker {
     }
 
     return data;
-  }
-
-  parent(parent) {
-    this._parent = parent;
-    return this;
   }
 
   pass(box, data, callback) {

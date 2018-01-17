@@ -20,6 +20,24 @@ export default class Broadcaster extends Worker {
     return worker;
   }
 
+  disconnect(worker, index = -1) {
+    if (index === -1) {
+      for (let i = 0; i < this._workers.length; i += 1) {
+        if (this._workers[i] === worker) {
+          index = i;
+        }
+      }
+    }
+
+    this._workers.splice(index, 1);
+    return this;
+  }
+
+  inject(worker, index) {
+    this._workers.splice(index, 0, worker);
+    return worker;
+  }
+
   pass(box, data, callback) {
     if (this._unify !== null && typeof box.unify === 'undefined') {
       box.unify = { total: this._unify };
@@ -33,9 +51,13 @@ export default class Broadcaster extends Worker {
   _find(compare) {
     let found = null;
 
-    this._workers.forEach((worker) => {
-      found = found || worker.find(compare);
-    });
+    for (let i = 0; i < this._workers.length; i += 1) {
+      found = this._workers[i].find(compare);
+
+      if (found) {
+        return found;
+      }
+    }
 
     return found;
   }
