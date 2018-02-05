@@ -66,7 +66,11 @@ export default class Worker {
     }
   }
 
-  connect(worker) {
+  connect(worker = null) {
+    if (worker === null) {
+      return this;
+    }
+
     this._worker = worker.setParent(this);
     return worker;
   }

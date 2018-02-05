@@ -15,6 +15,10 @@ export default class Router extends Worker {
   }
 
   connect(name, worker) {
+    if (worker === null) {
+      return this;
+    }
+
     this._workers[name] = worker;
     return super.connect(worker);
   }

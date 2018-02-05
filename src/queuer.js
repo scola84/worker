@@ -18,13 +18,13 @@ export default class Queuer extends Worker {
 
   act(box, data, callback) {
     if (this._queue === null) {
-      this._buildQueue();
+      this._createQueue();
     }
 
     this._queue.push({ box, data, callback });
   }
 
-  _buildQueue() {
+  _createQueue() {
     this._queue = queue(({ box, data }, callback) => {
       this.pass(box, data, callback);
     }, this._concurrency);
