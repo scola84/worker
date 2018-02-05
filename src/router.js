@@ -14,7 +14,7 @@ export default class Router extends Worker {
     }
   }
 
-  connect(name, worker) {
+  connect(name, worker = null) {
     if (worker === null) {
       return this;
     }

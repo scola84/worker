@@ -15,12 +15,12 @@ export default class Broadcaster extends Worker {
     return this;
   }
 
-  connect(worker) {
+  connect(worker = null) {
     if (worker === null) {
       return this;
     }
 
-    this._workers.push(worker);
+    this._workers.push(worker.setParent(this));
     return worker;
   }
 
