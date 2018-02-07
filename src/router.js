@@ -19,28 +19,19 @@ export default class Router extends Worker {
       return this;
     }
 
+    if (Array.isArray(worker)) {
+      this.connect(name, worker[0]);
+      return worker[1];
+    }
+
     this._workers[name] = worker;
     return super.connect(worker);
-  }
-
-  disconnect(name) {
-    delete this._workers[name];
-    return this;
-  }
-
-  inject(name, worker) {
-    return super.connect(name, worker);
   }
 
   pass(name, box, data, callback) {
     if (this._workers[name]) {
       this._workers[name].handle(box, data, callback);
     }
-  }
-
-  through(name, [input, output]) {
-    this.connect(name, input);
-    return output;
   }
 
   _find(compare) {

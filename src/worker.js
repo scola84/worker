@@ -1,6 +1,37 @@
 let id = 0;
+const log = { act: () => {}, err: () => {} };
 
 export default class Worker {
+  static setLogLevel(level) {
+    if (level > 0) {
+      log.err = (w, b, e, c) => {
+        console.error(new Date().toISOString(),
+          w.constructor.name, w.getId(), b, e, c);
+      };
+    }
+
+    if (level > 1) {
+      log.act = (w) => {
+        console.log(new Date().toISOString(),
+          w.constructor.name, w.getId());
+      };
+    }
+
+    if (level > 2) {
+      log.act = (w, b) => {
+        console.log(new Date().toISOString(),
+          w.constructor.name, w.getId(), b);
+      };
+    }
+
+    if (level > 3) {
+      log.act = (w, b, d, c) => {
+        console.log(new Date().toISOString(),
+          w.constructor.name, w.getId(), b, d, c);
+      };
+    }
+  }
+
   constructor(options = {}) {
     this._act = null;
     this._decide = null;
@@ -71,6 +102,11 @@ export default class Worker {
       return this;
     }
 
+    if (Array.isArray(worker)) {
+      this.connect(worker[0]);
+      return worker[1];
+    }
+
     this._worker = worker.setParent(this);
     return worker;
   }
@@ -128,18 +164,15 @@ export default class Worker {
       const decision = this.decide(box, data);
 
       if (decision === true) {
+        log.act(this, box, data, callback);
         this.act(box, data, callback);
       } else if (decision === false) {
         this.pass(box, data, callback);
       }
     } catch (error) {
+      log.err(this, box, error, callback);
       this.fail(box, error, callback);
     }
-  }
-
-  inject(worker) {
-    worker.connect(this._worker);
-    return this.connect(worker);
   }
 
   merge(box, data, object) {
@@ -154,10 +187,5 @@ export default class Worker {
     if (this._worker) {
       this._worker.handle(box, data, callback);
     }
-  }
-
-  through([input, output]) {
-    this.connect(input);
-    return output;
   }
 }

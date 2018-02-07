@@ -24,19 +24,6 @@ export default class Broadcaster extends Worker {
     return worker;
   }
 
-  disconnect(worker, index = -1) {
-    if (index === -1) {
-      for (let i = 0; i < this._workers.length; i += 1) {
-        if (this._workers[i] === worker) {
-          index = i;
-        }
-      }
-    }
-
-    this._workers.splice(index, 1);
-    return this;
-  }
-
   inject(worker, index) {
     this._workers.splice(index, 0, worker);
     return worker;
