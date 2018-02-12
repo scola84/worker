@@ -2,33 +2,21 @@ let id = 0;
 const log = { act: () => {}, err: () => {} };
 
 export default class Worker {
+  static log(name, worker, ...args) {
+    console[name](new Date().toISOString(),
+      worker.constructor.name, worker.getId(),
+      ...args);
+  }
+
   static setLogLevel(level) {
     if (level > 0) {
-      log.err = (w, b, e, c) => {
-        console.error(new Date().toISOString(),
-          w.constructor.name, w.getId(), b, e, c);
-      };
+      log.err = (...args) => Worker.log('error',
+        ...args);
     }
 
     if (level > 1) {
-      log.act = (w) => {
-        console.log(new Date().toISOString(),
-          w.constructor.name, w.getId());
-      };
-    }
-
-    if (level > 2) {
-      log.act = (w, b) => {
-        console.log(new Date().toISOString(),
-          w.constructor.name, w.getId(), b);
-      };
-    }
-
-    if (level > 3) {
-      log.act = (w, b, d, c) => {
-        console.log(new Date().toISOString(),
-          w.constructor.name, w.getId(), b, d, c);
-      };
+      log.act = (...args) => Worker.log('log',
+        ...args.slice(0, level - 1));
     }
   }
 
