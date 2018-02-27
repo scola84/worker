@@ -34,12 +34,12 @@ export default class Streamer extends Worker {
     super.fail(box, error, callback);
   }
 
-  read(box) {
-    this._createReadStream(box);
+  read(box, data) {
+    this._createReadStream(box, data);
   }
 
-  stream(box) {
-    return this._stream(box);
+  stream(box, data) {
+    return this._stream(box, data);
   }
 
   throttle(box, resume) {
@@ -57,7 +57,7 @@ export default class Streamer extends Worker {
   }
 
   write(box, data, callback) {
-    const streamer = this._createWriteStream(box);
+    const streamer = this._createWriteStream(box, data);
 
     if (data === null) {
       streamer.stream.end();
@@ -78,8 +78,8 @@ export default class Streamer extends Worker {
     }
   }
 
-  _createReadStream(box) {
-    const streamer = this._createStream(box);
+  _createReadStream(box, data) {
+    const streamer = this._createStream(box, data);
 
     if (streamer.read === true) {
       return streamer;
@@ -87,8 +87,8 @@ export default class Streamer extends Worker {
 
     streamer.read = true;
 
-    streamer.stream.on('data', (data) => {
-      this.data(box, data);
+    streamer.stream.on('data', (d) => {
+      this.data(box, d);
     });
 
     streamer.stream.once('end', () => {
@@ -98,7 +98,7 @@ export default class Streamer extends Worker {
     return streamer;
   }
 
-  _createStream(box) {
+  _createStream(box, data) {
     let streamer = box[this._name];
 
     if (typeof streamer === 'undefined') {
@@ -106,7 +106,7 @@ export default class Streamer extends Worker {
         data: [],
         paused: false,
         read: false,
-        stream: this.stream(box),
+        stream: this.stream(box, data),
         write: false
       };
 
