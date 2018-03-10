@@ -150,9 +150,9 @@ export default class Worker {
   handle(box, data, callback) {
     try {
       const decision = this.decide(box, data);
+      log.act(this, decision, box, data, callback);
 
       if (decision === true) {
-        log.act(this, box, data, callback);
         this.act(box, data, callback);
       } else if (decision === false) {
         this.pass(box, data, callback);
