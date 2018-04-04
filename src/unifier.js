@@ -2,7 +2,7 @@ import Worker from './worker';
 
 export default class Unifier extends Worker {
   act(box, data, callback) {
-    box.unify.count = (box.unify.count || 0) + 1;
+    box.unify.count += 1;
 
     if (box.unify.count === box.unify.total) {
       this.pass(box, data, callback);

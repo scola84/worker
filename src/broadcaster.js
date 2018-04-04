@@ -31,7 +31,7 @@ export default class Broadcaster extends Worker {
 
   pass(box, data, callback) {
     if (this._unify !== null && typeof box.unify === 'undefined') {
-      box.unify = { total: this._unify };
+      box.unify = { count: 0, total: this._unify };
     }
 
     for (let i = 0; i < this._workers.length; i += 1) {
