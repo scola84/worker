@@ -1,23 +1,9 @@
 let id = 0;
-const log = { act: () => {}, err: () => {} };
+let logLevel = 0;
 
 export default class Worker {
-  static log(name, worker, ...args) {
-    console[name](new Date().toISOString(),
-      worker.constructor.name, worker.getId(),
-      ...args);
-  }
-
   static setLogLevel(level) {
-    if (level > 0) {
-      log.err = (...args) => Worker.log('error',
-        ...args);
-    }
-
-    if (level > 1) {
-      log.act = (...args) => Worker.log('log',
-        ...args.slice(0, level - 1));
-    }
+    logLevel = level;
   }
 
   constructor(options = {}) {
@@ -116,6 +102,10 @@ export default class Worker {
   }
 
   fail(box, error, callback) {
+    if (logLevel > 0) {
+      this.log('error', box, error, callback);
+    }
+
     if (this._worker) {
       this._worker.err(box, error, callback);
     }
@@ -150,7 +140,6 @@ export default class Worker {
   handle(box, data, callback) {
     try {
       const decision = this.decide(box, data);
-      log.act(this, decision, box, data, callback);
 
       if (decision === true) {
         this.act(box, data, callback);
@@ -158,9 +147,14 @@ export default class Worker {
         this.pass(box, data, callback);
       }
     } catch (error) {
-      log.err(this, box, error, callback);
       this.fail(box, error, callback);
     }
+  }
+
+  log(name, ...args) {
+    console[name](new Date().toISOString(),
+      this.constructor.name, this.getId(),
+      ...args);
   }
 
   merge(box, data, object) {
@@ -172,6 +166,10 @@ export default class Worker {
   }
 
   pass(box, data, callback) {
+    if (logLevel > 1) {
+      this.log('info', [box, data, callback].slice(0, logLevel - 1));
+    }
+
     if (this._worker) {
       this._worker.handle(box, data, callback);
     }
