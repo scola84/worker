@@ -3,6 +3,7 @@ import Dealer from './src/dealer';
 import Manager from './src/manager';
 import Queuer from './src/queuer';
 import Router from './src/router';
+import Slicer from './src/slicer';
 import Streamer from './src/streamer';
 import Timer from './src/timer';
 import Unifier from './src/unifier';
@@ -14,6 +15,7 @@ export {
   Manager,
   Queuer,
   Router,
+  Slicer,
   Streamer,
   Timer,
   Unifier,

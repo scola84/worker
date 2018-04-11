@@ -103,7 +103,12 @@ export default class Worker {
 
   fail(box, error, callback) {
     if (logLevel > 0) {
-      this.log('error', box, error, callback);
+      if (error instanceof Error === true) {
+        if (error.logged !== true) {
+          error.logged = true;
+          this.log('error', box, error, callback);
+        }
+      }
     }
 
     if (this._worker) {

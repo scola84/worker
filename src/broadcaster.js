@@ -7,10 +7,10 @@ export default class Broadcaster extends Worker {
     this._unify = null;
     this._workers = [];
 
-    this.unify(options.unify);
+    this.setUnify(options.unify);
   }
 
-  unify(value = null) {
+  setUnify(value = null) {
     this._unify = value;
     return this;
   }
@@ -20,8 +20,8 @@ export default class Broadcaster extends Worker {
       return this;
     }
 
-    this._workers.push(worker.setParent(this));
-    return worker;
+    this._workers.push(worker);
+    return super.connect(worker);
   }
 
   inject(worker, index) {
@@ -30,8 +30,10 @@ export default class Broadcaster extends Worker {
   }
 
   pass(box, data, callback) {
-    if (this._unify !== null && typeof box.unify === 'undefined') {
-      box.unify = { count: 0, total: this._unify };
+    if (this._unify === true) {
+      if (typeof box.unify === 'undefined') {
+        box.unify = { count: 0, total: this._workers.length };
+      }
     }
 
     for (let i = 0; i < this._workers.length; i += 1) {
