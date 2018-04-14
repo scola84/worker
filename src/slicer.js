@@ -22,7 +22,7 @@ export default class Slicer extends Worker {
   }
 
   act(box, data, callback) {
-    const unsliced = this.filter(box, data);
+    const items = this.filter(box, data);
 
     if (this._unify === true) {
       if (typeof box.unify !== 'undefined') {
@@ -32,24 +32,30 @@ export default class Slicer extends Worker {
 
       box.unify = {
         count: 0,
-        total: Math.ceil(unsliced.length / this._count)
+        total: Math.ceil(items.length / this._count)
       };
     }
 
     let arg1 = null;
     let arg2 = null;
 
-    for (let i = 0; i < unsliced.length; i += this._count) {
-      [arg1, arg2] = this.merge(box, data, unsliced, i, i + this._count);
+    if (items.length === 0) {
+      box.unify.total = 1;
+      [arg1, arg2] = this.merge(box, data, items, 0, 0);
+      this.pass(arg1, arg2, callback);
+    }
+
+    for (let i = 0; i < items.length; i += this._count) {
+      [arg1, arg2] = this.merge(box, data, items, i, i + this._count);
       this.pass(arg1, arg2, callback);
     }
   }
 
-  merge(box, data, unsliced, begin, end) {
+  merge(box, data, items, begin, end) {
     if (this._merge) {
-      return this._merge(box, data, unsliced, begin, end);
+      return this._merge(box, data, items, begin, end);
     }
 
-    return [box, unsliced.slice(begin, end)];
+    return [box, items.slice(begin, end)];
   }
 }
