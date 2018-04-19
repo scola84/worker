@@ -11,7 +11,7 @@ export default class Queuer extends Worker {
     this.setConcurrency(options.concurrency);
   }
 
-  setConcurrency(value = 0) {
+  setConcurrency(value = 1) {
     this._concurrency = value;
     return this;
   }
