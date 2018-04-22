@@ -5,7 +5,10 @@ export default class Unifier extends Worker {
     super(options);
 
     this._collect = null;
+    this._name = null;
+
     this.setCollect(options.collect);
+    this.setName(options.name);
   }
 
   setCollect(value = false) {
@@ -13,26 +16,24 @@ export default class Unifier extends Worker {
     return this;
   }
 
+  setName(value = 'default') {
+    this._name = value;
+    return this;
+  }
+
   act(box, data, callback) {
-    box.unify.count += 1;
+    const unify = box.unify[this._name];
+    unify.count += 1;
 
     if (this._collect === true) {
-      box.unify.data = box.unify.data || [];
-      box.unify.data[box.unify.data.length] = data;
+      unify.data = unify.data || [];
+      unify.data[unify.data.length] = data;
     }
 
-    if (box.unify.count === box.unify.total) {
+    if (unify.count % unify.total === 0) {
       if (this._collect === true) {
-        data = box.unify.data;
-        delete box.unify.data;
-      }
-
-      if (typeof box._unify !== 'undefined') {
-        box.unify = box._unify.pop();
-
-        if (box._unify.length === 0) {
-          delete box._unify;
-        }
+        data = unify.data;
+        delete unify.data;
       }
 
       this.pass(box, data, callback);

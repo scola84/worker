@@ -20,6 +20,11 @@ export default class Broadcaster extends Worker {
       return this;
     }
 
+    if (Array.isArray(worker)) {
+      this.connect(worker[0]);
+      return worker[1];
+    }
+
     this._workers.push(worker);
     return super.connect(worker);
   }

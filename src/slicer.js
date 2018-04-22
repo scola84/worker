@@ -5,14 +5,21 @@ export default class Slicer extends Worker {
     super(options);
 
     this._count = null;
+    this._name = null;
     this._unify = null;
 
     this.setCount(options.count);
+    this.setName(options.name);
     this.setUnify(options.unify);
   }
 
   setCount(value = 1) {
     this._count = value;
+    return this;
+  }
+
+  setName(value = 'default') {
+    this._name = value;
     return this;
   }
 
@@ -25,12 +32,9 @@ export default class Slicer extends Worker {
     const items = this.filter(box, data);
 
     if (this._unify === true) {
-      if (typeof box.unify !== 'undefined') {
-        box._unify = box._unify || [];
-        box._unify[box._unify.length] = box.unify;
-      }
+      box.unify = box.unify || {};
 
-      box.unify = {
+      box.unify[this._name] = {
         count: 0,
         total: Math.ceil(items.length / this._count)
       };
@@ -40,7 +44,7 @@ export default class Slicer extends Worker {
     let arg2 = null;
 
     if (items.length === 0) {
-      box.unify.total = 1;
+      box.unify[this._name].total = 1;
       [arg1, arg2] = this.merge(box, data, items, 0, 0);
       this.pass(arg1, arg2, callback);
     }
