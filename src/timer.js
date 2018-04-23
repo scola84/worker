@@ -31,15 +31,15 @@ export default class Timer extends Worker {
 
   start() {
     if (this._schedule !== null) {
-      scheduleJob(this._schedule, () => this.handle());
+      scheduleJob(this._schedule, () => this.handle({}));
     }
 
     if (this._interval !== null) {
-      setInterval(() => this.handle(), this._interval);
+      setInterval(() => this.handle({}), this._interval);
     }
 
     if (this._immediate === true) {
-      this.handle();
+      this.handle({});
     }
   }
 }
