@@ -4,13 +4,20 @@ export default class Broadcaster extends Worker {
   constructor(options = {}) {
     super(options);
 
+    this._name = null;
     this._unify = null;
     this._workers = [];
 
+    this.setName(options.name);
     this.setUnify(options.unify);
   }
 
-  setUnify(value = null) {
+  setName(value = 'default') {
+    this._name = value;
+    return this;
+  }
+
+  setUnify(value = true) {
     this._unify = value;
     return this;
   }
@@ -36,9 +43,12 @@ export default class Broadcaster extends Worker {
 
   pass(box, data, callback) {
     if (this._unify === true) {
-      if (typeof box.unify === 'undefined') {
-        box.unify = { count: 0, total: this._workers.length };
-      }
+      box.unify = box.unify || {};
+
+      box.unify[this._name] = {
+        count: 0,
+        total: this._workers.length
+      };
     }
 
     for (let i = 0; i < this._workers.length; i += 1) {
