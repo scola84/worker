@@ -10,7 +10,8 @@ export default class Router extends Worker {
     if (this._act) {
       this._act(box, data, callback);
     } else {
-      this.pass(box.name, box, data, callback);
+      const name = this.filter(box, data);
+      this.pass(name, box, data, callback);
     }
   }
 
@@ -26,6 +27,14 @@ export default class Router extends Worker {
 
     this._workers[name] = worker;
     return super.connect(worker);
+  }
+
+  filter(box, data, context) {
+    if (this._filter) {
+      return this._filter(box, data, context);
+    }
+
+    return box.name;
   }
 
   pass(name, box, data, callback) {

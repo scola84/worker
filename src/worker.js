@@ -2,6 +2,10 @@ let id = 0;
 let logLevel = 0;
 
 export default class Worker {
+  static getId() {
+    return id;
+  }
+
   static setLogLevel(level) {
     logLevel = level;
   }
