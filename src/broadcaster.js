@@ -37,6 +37,15 @@ export default class Broadcaster extends Worker {
   }
 
   inject(worker, index) {
+    if (worker === null) {
+      return this;
+    }
+
+    if (Array.isArray(worker)) {
+      this.inject(worker[0], index);
+      return worker[1];
+    }
+
     this._workers.splice(index, 0, worker);
     return worker;
   }
