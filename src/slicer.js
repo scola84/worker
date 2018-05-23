@@ -7,10 +7,12 @@ export default class Slicer extends Worker {
     this._count = null;
     this._name = null;
     this._unify = null;
+    this._wrap = null;
 
     this.setCount(options.count);
     this.setName(options.name);
     this.setUnify(options.unify);
+    this.setWrap(options.wrap);
   }
 
   setCount(value = 1) {
@@ -28,8 +30,17 @@ export default class Slicer extends Worker {
     return this;
   }
 
+  setWrap(value = false) {
+    this._wrap = value;
+    return this;
+  }
+
   act(box, data, callback) {
     const items = this.filter(box, data);
+
+    if (this._wrap === true) {
+      box = { box };
+    }
 
     if (this._unify === true) {
       box.unify = box.unify || {};
@@ -60,6 +71,9 @@ export default class Slicer extends Worker {
       return this._merge(box, data, items, begin, end);
     }
 
-    return [box, items.slice(begin, end)];
+    data = items.slice(begin, end);
+    data = this._count === 1 ? data.pop() : data;
+
+    return [box, data];
   }
 }

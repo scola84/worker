@@ -6,10 +6,12 @@ export default class Broadcaster extends Worker {
 
     this._name = null;
     this._unify = null;
+    this._wrap = null;
     this._workers = [];
 
     this.setName(options.name);
     this.setUnify(options.unify);
+    this.setWrap(options.wrap);
   }
 
   setName(value = 'default') {
@@ -19,6 +21,11 @@ export default class Broadcaster extends Worker {
 
   setUnify(value = true) {
     this._unify = value;
+    return this;
+  }
+
+  setWrap(value = false) {
+    this._wrap = value;
     return this;
   }
 
@@ -51,6 +58,10 @@ export default class Broadcaster extends Worker {
   }
 
   pass(box, data, callback) {
+    if (this._wrap === true) {
+      box = { box };
+    }
+
     if (this._unify === true) {
       box.unify = box.unify || {};
 

@@ -6,9 +6,11 @@ export default class Unifier extends Worker {
 
     this._collect = null;
     this._name = null;
+    this._wrap = null;
 
     this.setCollect(options.collect);
     this.setName(options.name);
+    this.setWrap(options.wrap);
   }
 
   setCollect(value = false) {
@@ -18,6 +20,11 @@ export default class Unifier extends Worker {
 
   setName(value = 'default') {
     this._name = value;
+    return this;
+  }
+
+  setWrap(value = false) {
+    this._wrap = value;
     return this;
   }
 
@@ -34,6 +41,10 @@ export default class Unifier extends Worker {
       if (this._collect === true) {
         data = unify.data;
         delete unify.data;
+      }
+
+      if (this._wrap === true) {
+        box = box.box;
       }
 
       this.pass(box, data, callback);
