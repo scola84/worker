@@ -28,8 +28,8 @@ export default class Worker {
     this.setMerge(options.merge);
   }
 
-  getId() {
-    return this._id;
+  getAct() {
+    return this._act;
   }
 
   setAct(value = null) {
@@ -37,9 +37,17 @@ export default class Worker {
     return this;
   }
 
+  getDecide() {
+    return this._decide;
+  }
+
   setDecide(value = null) {
     this._decide = value;
     return this;
+  }
+
+  getErr() {
+    return this._err;
   }
 
   setErr(value = null) {
@@ -47,9 +55,17 @@ export default class Worker {
     return this;
   }
 
+  getFilter() {
+    return this._filter;
+  }
+
   setFilter(value = null) {
     this._filter = value;
     return this;
+  }
+
+  getId() {
+    return this._id;
   }
 
   setId(value = ++id) {
@@ -57,9 +73,17 @@ export default class Worker {
     return this;
   }
 
+  getMerge() {
+    return this._merge;
+  }
+
   setMerge(value = null) {
     this._merge = value;
     return this;
+  }
+
+  getParent() {
+    return this._parent;
   }
 
   setParent(value = null) {
