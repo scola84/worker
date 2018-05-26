@@ -200,7 +200,7 @@ export default class Worker {
 
   pass(box, data, callback) {
     if (logLevel > 1) {
-      this.log('info', [box, data, callback].slice(0, logLevel - 1));
+      this.log('info', ...[box, data, callback].slice(0, logLevel - 2));
     }
 
     if (this._worker) {
