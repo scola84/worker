@@ -16,6 +16,7 @@ export default class Worker {
     this._err = null;
     this._filter = null;
     this._id = null;
+    this._log = null;
     this._merge = null;
     this._parent = null;
     this._worker = null;
@@ -23,8 +24,9 @@ export default class Worker {
     this.setAct(options.act);
     this.setDecide(options.decide);
     this.setErr(options.err);
-    this.setId(options.id);
     this.setFilter(options.filter);
+    this.setId(options.id);
+    this.setLog(options.log);
     this.setMerge(options.merge);
   }
 
@@ -70,6 +72,15 @@ export default class Worker {
 
   setId(value = ++id) {
     this._id = value;
+    return this;
+  }
+
+  getLog() {
+    return this._log;
+  }
+
+  setLog(value = false) {
+    this._log = value;
     return this;
   }
 
@@ -201,6 +212,8 @@ export default class Worker {
   pass(box, data, callback) {
     if (logLevel > 1) {
       this.log('info', ...[box, data, callback].slice(0, logLevel - 2));
+    } else if (this._log) {
+      this.log('info', ...[box, data, callback]);
     }
 
     if (this._worker) {
