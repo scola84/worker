@@ -28,5 +28,11 @@ export default class Queuer extends Worker {
     this._queue = queue(({ box, data }, callback) => {
       this.pass(box, data, callback);
     }, this._concurrency);
+
+    if (this._log === true) {
+      setInterval(() => {
+        console.log(this._id, this._queue.length());
+      }, 1000);
+    }
   }
 }
