@@ -104,6 +104,8 @@ export default class Worker {
   }
 
   act(box, data, callback) {
+    data = this.filter(box, data);
+
     if (this._act) {
       this._act(box, data, callback);
     } else {
