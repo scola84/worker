@@ -12,6 +12,7 @@ export default class Worker {
 
   constructor(options = {}) {
     this._act = null;
+    this._bypass = null;
     this._decide = null;
     this._err = null;
     this._filter = null;
@@ -110,6 +111,15 @@ export default class Worker {
     }
   }
 
+  bypass(worker = null) {
+    if (worker === null) {
+      return this;
+    }
+
+    this._bypass = worker;
+    return worker;
+  }
+
   connect(worker = null) {
     if (worker === null) {
       return this;
@@ -150,7 +160,9 @@ export default class Worker {
       }
     }
 
-    if (this._worker) {
+    if (this._bypass) {
+      this._bypass.err(box, error, callback);
+    } else if (this._worker) {
       this._worker.err(box, error, callback);
     }
   }
