@@ -31,7 +31,7 @@ export default class Queuer extends Worker {
 
     if (this._log === true) {
       setInterval(() => {
-        console.log(this._id, this._queue.length());
+        console.log(this._id, this._queue.length(), this._queue.running());
       }, 1000);
     }
   }
