@@ -203,6 +203,8 @@ export default class Worker {
         this.act(box, data, callback);
       } else if (decision === false) {
         this.pass(box, data, callback);
+      } else if (this._bypass) {
+        this._bypass.handle(box, data, callback);
       }
     } catch (error) {
       this.fail(box, error, callback);
