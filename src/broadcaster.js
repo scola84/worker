@@ -67,6 +67,7 @@ export default class Broadcaster extends Worker {
 
       box.unify[this._name] = {
         count: 0,
+        empty: false,
         total: this._workers.length
       };
     }

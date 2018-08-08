@@ -35,13 +35,18 @@ export default class Unifier extends Worker {
     if (this._collect === true) {
       unify.data = unify.data || [];
 
-      const index = typeof data.index === 'undefined' ?
-        unify.data.length : data.index;
+      if (unify.empty === false) {
+        const index = typeof data.index === 'undefined' ?
+          unify.data.length : data.index;
 
-      unify.data[index] = data;
+        unify.data[index] = data;
+      }
     }
 
-    if (unify.count % unify.total === 0) {
+    const pass = unify.empty === true ||
+      unify.count % unify.total === 0;
+
+    if (pass === true) {
       if (this._collect === true) {
         data = unify.data;
         delete unify.data;

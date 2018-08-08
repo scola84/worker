@@ -47,6 +47,7 @@ export default class Slicer extends Worker {
 
       box.unify[this._name] = {
         count: 0,
+        empty: items.length === 0,
         total: Math.ceil(items.length / this._count)
       };
     }
@@ -55,9 +56,9 @@ export default class Slicer extends Worker {
     let arg2 = null;
 
     if (items.length === 0) {
-      box.unify[this._name].total = 1;
-      [arg1, arg2] = this.merge(box, data, items, 0, 0);
-      this.pass(arg1, arg2, callback);
+      if (this._bypass) {
+        this._bypass.handle(box, [], callback);
+      }
     }
 
     for (let i = 0; i < items.length; i += this._count) {
