@@ -22,17 +22,23 @@ export default class Queuer extends Worker {
     }
 
     this._queue.push({ box, data, callback });
+
+    if (this._log === 'length') {
+      console.log(this._id, this._queue.length(),
+        this._queue.running());
+    }
   }
 
   _createQueue() {
     this._queue = queue(({ box, data }, callback) => {
-      this.pass(box, data, callback);
-    }, this._concurrency);
+      this.pass(box, data, (...args) => {
+        callback(...args);
 
-    if (this._log === true) {
-      setInterval(() => {
-        console.log(this._id, this._queue.length(), this._queue.running());
-      }, 1000);
-    }
+        if (this._log === 'length') {
+          console.log(this._id, this._queue.length(),
+            this._queue.running());
+        }
+      });
+    }, this._concurrency);
   }
 }
