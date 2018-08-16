@@ -109,6 +109,7 @@ export default class Worker {
     if (this._act) {
       this._act(box, data, callback);
     } else {
+      data = this.merge(box, data);
       this.pass(box, data, callback);
     }
   }
@@ -158,7 +159,11 @@ export default class Worker {
         if (error.logged !== true) {
           error.logged = true;
           this.log('error', box, error, callback);
+        } else if (logLevel > 1) {
+          this.log('info');
         }
+      } else if (logLevel > 1) {
+        this.log('info');
       }
     }
 
@@ -228,7 +233,7 @@ export default class Worker {
   pass(box, data, callback) {
     if (logLevel > 1) {
       this.log('info', ...[box, data, callback].slice(0, logLevel - 2));
-    } else if (this._log) {
+    } else if (this._log === true) {
       this.log('info', ...[box, data, callback]);
     }
 

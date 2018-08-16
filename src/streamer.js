@@ -12,6 +12,11 @@ export default class Streamer extends Worker {
   }
 
   data(box, data) {
+    if (this._log === 'data') {
+      console.log(String(data));
+      console.log();
+    }
+
     if (this._data) {
       this._data(box, data);
     } else {
@@ -57,6 +62,11 @@ export default class Streamer extends Worker {
   }
 
   write(box, data, callback) {
+    if (this._log === 'data') {
+      console.log(String(data));
+      console.log();
+    }
+
     const streamer = this._createWriteStream(box, data);
 
     if (data === null) {
