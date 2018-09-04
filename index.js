@@ -2,6 +2,7 @@ import Broadcaster from './src/broadcaster';
 import Dealer from './src/dealer';
 import Manager from './src/manager';
 import Queuer from './src/queuer';
+import Rotator from './src/rotator';
 import Router from './src/router';
 import Slicer from './src/slicer';
 import Streamer from './src/streamer';
@@ -14,6 +15,7 @@ export {
   Dealer,
   Manager,
   Queuer,
+  Rotator,
   Router,
   Slicer,
   Streamer,
