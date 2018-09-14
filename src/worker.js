@@ -1,13 +1,19 @@
+import util from 'util';
+
 let id = 0;
-let logLevel = 0;
+
+const logOptions = {
+  depth: 0,
+  level: 0
+};
 
 export default class Worker {
   static getId() {
     return id;
   }
 
-  static setLogLevel(level) {
-    logLevel = level;
+  static setOptions(options) {
+    Object.assign(logOptions, options);
   }
 
   constructor(options = {}) {
@@ -154,18 +160,7 @@ export default class Worker {
   }
 
   fail(box, error, callback) {
-    if (logLevel > 0) {
-      if (error instanceof Error === true) {
-        if (error.logged !== true) {
-          error.logged = true;
-          this.log('error', box, error, callback);
-        } else if (logLevel > 1) {
-          this.log('info');
-        }
-      } else if (logLevel > 1) {
-        this.log('info');
-      }
-    }
+    this.log('error', box, error, callback);
 
     if (this._bypass) {
       this._bypass.err(box, error, callback);
@@ -217,6 +212,31 @@ export default class Worker {
   }
 
   log(name, ...args) {
+    if (logOptions.level === 0) {
+      return;
+    }
+
+    if (name === 'info') {
+      if (logOptions.level > 1) {
+        args = args.slice(0, logOptions.level - 2);
+      } else if (this._log !== true) {
+        return;
+      }
+    } else if (name === 'error') {
+      if (args[1] instanceof Error === true && args[1].logged !== true) {
+        args[1].logged = true;
+      } else if (logOptions.level > 1) {
+        name = 'info';
+        args = [];
+      } else {
+        return;
+      }
+    }
+
+    if (args.length > 0 && util) {
+      args[0] = util.inspect(args[0], { depth: logOptions.depth });
+    }
+
     console[name](new Date().toISOString(),
       this.constructor.name, this.getId(),
       ...args);
@@ -231,11 +251,7 @@ export default class Worker {
   }
 
   pass(box, data, callback) {
-    if (logLevel > 1) {
-      this.log('info', ...[box, data, callback].slice(0, logLevel - 2));
-    } else if (this._log === true) {
-      this.log('info', ...[box, data, callback]);
-    }
+    this.log('info', box, data, callback);
 
     if (this._worker) {
       this._worker.handle(box, data, callback);
