@@ -31,7 +31,7 @@ export default class Rotator extends Timer {
   }
 
   rotate(box, count) {
-    box.limit.offset = (count % box.limit.count) === 0 ?
+    box.limit.offset = count > 0 && (count % box.limit.count) === 0 ?
       box.limit.offset + box.limit.count : 0;
   }
 }
