@@ -43,13 +43,19 @@ export default class Slicer extends Worker {
     }
 
     if (this._unify === true) {
-      box.unify = box.unify || {};
-
-      box.unify[this._name] = {
+      const unify = {
         count: 0,
         empty: items.length === 0,
         total: Math.ceil(items.length / this._count)
       };
+
+      box.unify = box.unify || {};
+      box.unify[this._name] = unify;
+
+      if (this._log === 'unify') {
+        console.log('slicer (%s): count=%s, total=%s, empty=%s',
+          this._name, unify.count, unify.total, unify.empty);
+      }
     }
 
     let arg1 = null;
@@ -57,7 +63,8 @@ export default class Slicer extends Worker {
 
     if (items.length === 0) {
       if (this._bypass) {
-        this._bypass.handle(box, [], callback);
+        [box, data] = this.merge(box, data, items, 0, 0);
+        this._bypass.handle(box, data, callback);
       }
     }
 

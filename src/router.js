@@ -38,6 +38,11 @@ export default class Router extends Worker {
   }
 
   pass(name, box, data, callback) {
+    if (this._log === 'route') {
+      console.log('router (%s): name=%s, workers=%s',
+        this._id, name, Object.keys(this._workers));
+    }
+
     if (this._workers[name]) {
       this._workers[name].handle(box, data, callback);
     }

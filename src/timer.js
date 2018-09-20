@@ -31,11 +31,25 @@ export default class Timer extends Worker {
 
   start() {
     if (this._schedule !== null) {
-      scheduleJob(this._schedule, () => this.handle({}));
+      scheduleJob(this._schedule, () => {
+        if (this._log === 'time') {
+          console.log('timer (%s): schedule=%s',
+            this._id, this._schedule);
+        }
+
+        this.handle({});
+      });
     }
 
     if (this._interval !== null) {
-      setInterval(() => this.handle({}), this._interval);
+      setInterval(() => {
+        if (this._log === 'time') {
+          console.log('timer (%s): interval=%s',
+            this._id, this._interval);
+        }
+
+        this.handle({});
+      }, this._interval);
     }
 
     if (this._immediate === true) {

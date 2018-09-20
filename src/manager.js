@@ -1,11 +1,18 @@
 import Worker from './worker';
 
 export default class Manager extends Worker {
-  constructor(methods = {}) {
-    super(methods);
+  constructor(options = {}) {
+    super(options);
 
-    this._names = methods.names;
+    this._names = null;
     this._pool = {};
+
+    this.setNames(options.names);
+  }
+
+  setNames(value = null) {
+    this._names = value;
+    return this;
   }
 
   act(box, data, callback) {
@@ -19,7 +26,13 @@ export default class Manager extends Worker {
       return;
     }
 
-    const worker = this._pool[box._names.shift()];
+    const name = box._names.shift();
+    const worker = this._pool[name];
+
+    if (this._log === 'manage') {
+      console.log('manager (%s): name=%s, pool=%s',
+        this._id, name, Object.keys(this._pool));
+    }
 
     if (worker) {
       worker.handle(box, data, callback);

@@ -23,9 +23,9 @@ export default class Queuer extends Worker {
 
     this._queue.push({ box, data, callback });
 
-    if (this._log === 'length') {
-      console.log(this._id, this._queue.length(),
-        this._queue.running());
+    if (this._log === 'queue') {
+      console.log('queuer (%s): fn=act, length=%s, running=%s',
+        this._id, this._queue.length(), this._queue.running());
     }
   }
 
@@ -34,9 +34,9 @@ export default class Queuer extends Worker {
       this.pass(box, data, (...args) => {
         callback(...args);
 
-        if (this._log === 'length') {
-          console.log(this._id, this._queue.length(),
-            this._queue.running());
+        if (this._log === 'queue') {
+          console.log('queuer (%s): fn=callback, length=%s, running=%s',
+            this._id, this._queue.length(), this._queue.running());
         }
       });
     }, this._concurrency);

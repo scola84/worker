@@ -63,13 +63,19 @@ export default class Broadcaster extends Worker {
     }
 
     if (this._unify === true) {
-      box.unify = box.unify || {};
-
-      box.unify[this._name] = {
+      const unify = {
         count: 0,
         empty: false,
         total: this._workers.length
       };
+
+      box.unify = box.unify || {};
+      box.unify[this._name] = unify;
+
+      if (this._log === 'unify') {
+        console.log('broadcaster (%s): count=%s, total=%s, empty=%s',
+          this._name, unify.count, unify.total, unify.empty);
+      }
     }
 
     for (let i = 0; i < this._workers.length; i += 1) {

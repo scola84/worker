@@ -46,6 +46,11 @@ export default class Unifier extends Worker {
     const pass = unify.empty === true ||
       unify.count % unify.total === 0;
 
+    if (this._log === 'unify') {
+      console.log('unifier (%s): count=%s, total=%s, empty=%s',
+        this._name, unify.count, unify.total, unify.empty);
+    }
+
     if (pass === true) {
       if (this._collect === true) {
         data = unify.data;
