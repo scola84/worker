@@ -17,16 +17,17 @@ export default class Worker {
   }
 
   constructor(options = {}) {
-    this._act = null;
     this._bypass = null;
+    this._parent = null;
+    this._worker = null;
+
+    this._act = null;
     this._decide = null;
     this._err = null;
     this._filter = null;
     this._id = null;
     this._log = null;
     this._merge = null;
-    this._parent = null;
-    this._worker = null;
 
     this.setAct(options.act);
     this.setDecide(options.decide);
@@ -129,6 +130,17 @@ export default class Worker {
     return worker;
   }
 
+  clone() {
+    return new this.constructor({
+      act: this._act,
+      decide: this._decide,
+      err: this._err,
+      filter: this._filter,
+      log: this._log,
+      merge: this._merge
+    });
+  }
+
   connect(worker = null) {
     if (worker === null) {
       return this;
@@ -141,6 +153,16 @@ export default class Worker {
 
     this._worker = worker.setParent(this);
     return worker;
+  }
+
+  copy(worker) {
+    return this
+      .setAct(worker.getAct())
+      .setDecide(worker.getDecide())
+      .setErr(worker.getErr())
+      .setFilter(worker.getFilter())
+      .setLog(worker.getLog())
+      .setMerge(worker.getMerge());
   }
 
   decide(box, data) {
