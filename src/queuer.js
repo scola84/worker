@@ -5,14 +5,21 @@ export default class Queuer extends Worker {
   constructor(options = {}) {
     super(options);
 
-    this._concurrency = 0;
+    this._concurrency = null;
+    this._delay = null;
     this._queue = null;
 
     this.setConcurrency(options.concurrency);
+    this.setDelay(options.delay);
   }
 
   setConcurrency(value = 1) {
     this._concurrency = value;
+    return this;
+  }
+
+  setDelay(value = null) {
+    this._delay = value;
     return this;
   }
 
@@ -31,14 +38,24 @@ export default class Queuer extends Worker {
 
   _createQueue() {
     this._queue = queue(({ box, data }, callback) => {
-      this.pass(box, data, (...args) => {
-        callback(...args);
+      if (this._delay === null) {
+        return this._execute(box, data, callback);
+      }
 
-        if (this._log === 'queue') {
-          console.log('queuer (%s): fn=callback, length=%s, running=%s',
-            this._id, this._queue.length(), this._queue.running());
-        }
-      });
+      return setTimeout(() => {
+        this._execute(box, data, callback);
+      }, this._delay);
     }, this._concurrency);
+  }
+
+  _execute(box, data, callback) {
+    this.pass(box, data, (...args) => {
+      callback(...args);
+
+      if (this._log === 'queue') {
+        console.log('queuer (%s): fn=callback, length=%s, running=%s',
+          this._id, this._queue.length(), this._queue.running());
+      }
+    });
   }
 }
