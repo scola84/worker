@@ -45,6 +45,8 @@ export default class Router extends Worker {
 
     if (this._workers[name]) {
       this._workers[name].handle(box, data, callback);
+    } else if (this._bypass) {
+      this._bypass.handle(box, data, callback);
     }
   }
 
