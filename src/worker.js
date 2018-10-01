@@ -229,6 +229,7 @@ export default class Worker {
         this._bypass.handle(box, data, callback);
       }
     } catch (error) {
+      error.data = data;
       this.fail(box, error, callback);
     }
   }
