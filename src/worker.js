@@ -1,22 +1,57 @@
+import merge from 'lodash-es/merge';
 import util from 'util';
+import sprintf from 'sprintf-js';
 
-let id = 0;
-
-const logOptions = {
+const woptions = {
   depth: 0,
-  level: 0
+  format: '%(date)s %(description)s %(box)s %(data)s',
+  id: 0,
+  level: 0,
+  levels: {
+    fail: {
+      depth: null,
+      fn: 'error',
+      format: null,
+      icon: '\x1b[31m✖\x1b[0m',
+      number: 1
+    },
+    pass: {
+      depth: null,
+      fn: 'log',
+      format: null,
+      icon: '\x1b[32m✔\x1b[0m',
+      number: 2
+    },
+    info: {
+      depth: null,
+      fn: 'log',
+      format: null,
+      icon: ' ',
+      number: 3
+    },
+    debug: {
+      depth: null,
+      fn: 'log',
+      format: null,
+      icon: ' ',
+      number: 4
+    }
+  }
 };
 
 export default class Worker {
   static getId() {
-    return id;
+    return woptions.id;
   }
 
   static setOptions(options) {
-    Object.assign(logOptions, options);
+    merge(woptions, options);
   }
 
   constructor(options = {}) {
+    this._id = null;
+    this._description = null;
+
     this._bypass = null;
     this._parent = null;
     this._worker = null;
@@ -25,12 +60,12 @@ export default class Worker {
     this._decide = null;
     this._err = null;
     this._filter = null;
-    this._id = null;
     this._log = null;
     this._merge = null;
 
     this.setAct(options.act);
     this.setDecide(options.decide);
+    this.setDescription(options.description);
     this.setErr(options.err);
     this.setFilter(options.filter);
     this.setId(options.id);
@@ -56,6 +91,15 @@ export default class Worker {
     return this;
   }
 
+  getDescription() {
+    return this._description;
+  }
+
+  setDescription(value = null) {
+    this._description = value;
+    return this;
+  }
+
   getErr() {
     return this._err;
   }
@@ -78,7 +122,7 @@ export default class Worker {
     return this._id;
   }
 
-  setId(value = ++id) {
+  setId(value = ++woptions.id) {
     this._id = value;
     return this;
   }
@@ -127,7 +171,27 @@ export default class Worker {
     }
 
     this._bypass = worker;
-    return worker;
+    return this;
+  }
+
+  check(object, properties, strict = false) {
+    let property = null;
+
+    for (let i = 0; i < properties.length; i += 1) {
+      property = properties[i];
+
+      if (typeof object[property] === 'undefined') {
+        throw new Error(`Property ${property} is undefined`);
+      }
+
+      if (object[property] === null) {
+        throw new Error(`Property ${property} is null`);
+      }
+
+      if (strict === true && object[property] === '') {
+        throw new Error(`Property ${property} is an empty string`);
+      }
+    }
   }
 
   clone() {
@@ -165,12 +229,18 @@ export default class Worker {
       .setMerge(worker.getMerge());
   }
 
-  decide(box, data) {
+  decide(box, data, callback) {
+    let decision = true;
+
     if (this._decide) {
-      return this._decide(box, data);
+      decision = this._decide(box, data);
+
+      if (decision !== true) {
+        this.log('info', box, data, callback);
+      }
     }
 
-    return true;
+    return decision;
   }
 
   err(box, error, callback) {
@@ -182,7 +252,7 @@ export default class Worker {
   }
 
   fail(box, error, callback) {
-    this.log('error', box, error, callback);
+    this.log('fail', box, error, callback);
 
     if (this._bypass) {
       this._bypass.err(box, error, callback);
@@ -219,7 +289,7 @@ export default class Worker {
 
   handle(box, data, callback) {
     try {
-      const decision = this.decide(box, data);
+      const decision = this.decide(box, data, callback);
 
       if (decision === true) {
         this.act(box, data, callback);
@@ -234,35 +304,61 @@ export default class Worker {
     }
   }
 
-  log(name, ...args) {
-    if (logOptions.level === 0) {
-      return;
-    }
+  log(name, box, data, callback, ...extra) {
+    const level = woptions.levels[name];
 
-    if (name === 'info') {
-      if (logOptions.level > 1) {
-        args = args.slice(0, logOptions.level - 2);
-      } else if (this._log !== true) {
+    if (this._log !== true) {
+      if (level.number > woptions.level) {
         return;
       }
-    } else if (name === 'error') {
-      if (args[1] instanceof Error === true && args[1].logged !== true) {
-        args[1].logged = true;
-      } else if (logOptions.level > 1) {
-        name = 'info';
-        args = [];
+
+      if (this._description === null) {
+        if (woptions.level < 4) {
+          return;
+        }
+      }
+    }
+
+    if (data instanceof Error === true) {
+      if (data.logged !== true) {
+        data.logged = true;
       } else {
         return;
       }
     }
 
-    if (args.length > 0 && util) {
-      args[0] = util.inspect(args[0], { depth: logOptions.depth });
+    let format = level.format || woptions.format;
+
+    if (typeof format === 'function') {
+      format = format(box, data, ...extra);
     }
 
-    console[name](new Date().toISOString(),
-      this.constructor.name, this.getId(),
-      ...args);
+    if (util) {
+      if (Buffer.isBuffer(data)) {
+        data = String(data);
+      }
+
+      if (typeof box === 'object') {
+        box = util.inspect(box, {
+          depth: level.depth === null ? woptions.depth : level.depth
+        });
+      }
+
+      if (typeof data === 'object') {
+        data = util.inspect(data, {
+          depth: level.depth === null ? woptions.depth : level.depth
+        });
+      }
+    }
+
+    console[level.fn](this.sprintf(format, {
+      date: new Date().toISOString(),
+      description: this.getDescription() || this.constructor.name,
+      icon: level.icon,
+      box,
+      data,
+      callback
+    }));
   }
 
   merge(box, data, object) {
@@ -274,10 +370,14 @@ export default class Worker {
   }
 
   pass(box, data, callback) {
-    this.log('info', box, data, callback);
+    this.log('pass', box, data, callback);
 
     if (this._worker) {
       this._worker.handle(box, data, callback);
     }
+  }
+
+  sprintf(...args) {
+    return sprintf.sprintf(...args);
   }
 }
