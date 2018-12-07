@@ -4,9 +4,9 @@ import sprintf from 'sprintf-js';
 
 const woptions = {
   depth: 0,
-  format: '%(date)s %(description)s %(box)s %(data)s',
+  format: '%(icon)s %(date)s %(description)s %(box)s %(data)s',
   id: 0,
-  level: 0,
+  level: 1,
   levels: {
     fail: {
       depth: null,
@@ -49,8 +49,8 @@ export default class Worker {
   }
 
   constructor(options = {}) {
-    this._id = null;
     this._description = null;
+    this._id = null;
 
     this._bypass = null;
     this._parent = null;
@@ -261,9 +261,9 @@ export default class Worker {
     }
   }
 
-  filter(box, data, context) {
+  filter(box, data, ...extra) {
     if (this._filter) {
-      return this._filter(box, data, context);
+      return this._filter(box, data, ...extra);
     }
 
     return data;
@@ -314,7 +314,9 @@ export default class Worker {
 
       if (this._description === null) {
         if (woptions.level < 4) {
-          return;
+          if (name !== 'fail') {
+            return;
+          }
         }
       }
     }
@@ -331,6 +333,12 @@ export default class Worker {
 
     if (typeof format === 'function') {
       format = format(box, data, ...extra);
+    }
+
+    let description = this._description;
+
+    if (typeof description === 'function') {
+      description = description(box, data, ...extra);
     }
 
     if (util) {
@@ -351,19 +359,25 @@ export default class Worker {
       }
     }
 
-    console[level.fn](this.sprintf(format, {
+    const options = {
       date: new Date().toISOString(),
-      description: this.getDescription() || this.constructor.name,
+      description: description || this.constructor.name,
       icon: level.icon,
       box,
       data,
       callback
-    }));
+    };
+
+    try {
+      console[level.fn](this.sprintf(format, options));
+    } catch (error) {
+      console.error(`${error.message}: %j`, options);
+    }
   }
 
-  merge(box, data, object) {
+  merge(box, data, ...extra) {
     if (this._merge) {
-      return this._merge(box, data, object);
+      return this._merge(box, data, ...extra);
     }
 
     return data;
