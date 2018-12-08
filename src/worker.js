@@ -287,6 +287,14 @@ export default class Worker {
     return null;
   }
 
+  format(string, values) {
+    if (Array.isArray(values)) {
+      return values.filter((v) => v).join(string);
+    }
+
+    return sprintf.sprintf(string, values);
+  }
+
   handle(box, data, callback) {
     try {
       const decision = this.decide(box, data, callback);
@@ -369,7 +377,7 @@ export default class Worker {
     };
 
     try {
-      console[level.fn](this.sprintf(format, options));
+      console[level.fn](this.format(format, options));
     } catch (error) {
       console.error(`${error.message}: %j`, options);
     }
@@ -389,9 +397,5 @@ export default class Worker {
     if (this._worker) {
       this._worker.handle(box, data, callback);
     }
-  }
-
-  sprintf(...args) {
-    return sprintf.sprintf(...args);
   }
 }
