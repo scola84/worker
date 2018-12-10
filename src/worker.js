@@ -22,6 +22,13 @@ const woptions = {
       icon: '\x1b[32m✔\x1b[0m',
       number: 2
     },
+    skip: {
+      depth: null,
+      fn: 'log',
+      format: null,
+      icon: ' ',
+      number: 2
+    },
     info: {
       depth: null,
       fn: 'log',
@@ -229,18 +236,12 @@ export default class Worker {
       .setMerge(worker.getMerge());
   }
 
-  decide(box, data, callback) {
-    let decision = true;
-
+  decide(box, data) {
     if (this._decide) {
-      decision = this._decide(box, data);
-
-      if (decision !== true) {
-        this.log('info', box, data, callback);
-      }
+      return this._decide(box, data);
     }
 
-    return decision;
+    return true;
   }
 
   err(box, error, callback) {
@@ -302,7 +303,7 @@ export default class Worker {
       if (decision === true) {
         this.act(box, data, callback);
       } else if (decision === false) {
-        this.pass(box, data, callback);
+        this.skip(box, data, callback);
       } else if (this._bypass) {
         this._bypass.handle(box, data, callback);
       }
@@ -393,6 +394,14 @@ export default class Worker {
 
   pass(box, data, callback) {
     this.log('pass', box, data, callback);
+
+    if (this._worker) {
+      this._worker.handle(box, data, callback);
+    }
+  }
+
+  skip(box, data, callback) {
+    this.log('skip', box, data, callback);
 
     if (this._worker) {
       this._worker.handle(box, data, callback);
