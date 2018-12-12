@@ -338,17 +338,11 @@ export default class Worker {
       }
     }
 
-    let format = level.format || woptions.format;
+    const format = this.resolve(level.format || woptions.format,
+      box, data, ...extra);
 
-    if (typeof format === 'function') {
-      format = format(box, data, ...extra);
-    }
-
-    let description = this._description;
-
-    if (typeof description === 'function') {
-      description = description(box, data, ...extra);
-    }
+    const description = this.resolve(this._description,
+      box, data, ...extra);
 
     if (util) {
       if (Buffer.isBuffer(data)) {
@@ -398,6 +392,14 @@ export default class Worker {
     if (this._worker) {
       this._worker.handle(box, data, callback);
     }
+  }
+
+  resolve(fn, ...args) {
+    if (typeof fn === 'function') {
+      return this.resolve(fn(...args), ...args);
+    }
+
+    return fn;
   }
 
   skip(box, data, callback) {
