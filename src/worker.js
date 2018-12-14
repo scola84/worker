@@ -1,47 +1,28 @@
 import merge from 'lodash-es/merge';
-import util from 'util';
 import sprintf from 'sprintf-js';
+import util from 'util';
 
 const woptions = {
   depth: 0,
-  format: '%(icon)s %(date)s %(description)s %(box)s %(data)s',
+  filter: 'fail',
+  format: '%(icon)s %(date)s %(description)s %(error)s',
   id: 0,
-  level: 1,
   levels: {
     fail: {
-      depth: null,
-      fn: 'error',
-      format: null,
       icon: '\x1b[31m✖\x1b[0m',
-      number: 1
+      stream: process.stderr
     },
     pass: {
-      depth: null,
-      fn: 'log',
-      format: null,
       icon: '\x1b[32m✔\x1b[0m',
-      number: 2
+      stream: process.stdout
     },
     skip: {
-      depth: null,
-      fn: 'log',
-      format: null,
       icon: ' ',
-      number: 2
+      stream: process.stdout
     },
     info: {
-      depth: null,
-      fn: 'log',
-      format: null,
       icon: ' ',
-      number: 3
-    },
-    debug: {
-      depth: null,
-      fn: 'log',
-      format: null,
-      icon: ' ',
-      number: 4
+      stream: process.stdout
     }
   }
 };
@@ -288,14 +269,6 @@ export default class Worker {
     return null;
   }
 
-  format(string, values) {
-    if (Array.isArray(values)) {
-      return values.filter((v) => v).join(string);
-    }
-
-    return sprintf.sprintf(string, values);
-  }
-
   handle(box, data, callback) {
     try {
       const decision = this.decide(box, data, callback);
@@ -314,31 +287,27 @@ export default class Worker {
   }
 
   log(name, box, data, callback, ...extra) {
+    if (woptions.filter.indexOf(name) === -1) {
+      if (this._log !== true) {
+        return;
+      }
+    }
+
+    let error = '';
+
+    if (name === 'fail') {
+      if (data instanceof Error === true && data.logged !== true) {
+        data.logged = true;
+        error = data.stack;
+        data = '';
+      } else if (woptions.filter.indexOf(',') === -1) {
+        return;
+      }
+    }
+
     const level = woptions.levels[name];
 
-    if (this._log !== true) {
-      if (level.number > woptions.level) {
-        return;
-      }
-
-      if (this._description === null) {
-        if (woptions.level < 4) {
-          if (name !== 'fail') {
-            return;
-          }
-        }
-      }
-    }
-
-    if (data instanceof Error === true) {
-      if (data.logged !== true) {
-        data.logged = true;
-      } else {
-        return;
-      }
-    }
-
-    const format = this.resolve(level.format || woptions.format,
+    const format = this.resolve(woptions.format,
       box, data, ...extra);
 
     const description = this.resolve(this._description,
@@ -351,13 +320,13 @@ export default class Worker {
 
       if (typeof box === 'object') {
         box = util.inspect(box, {
-          depth: level.depth === null ? woptions.depth : level.depth
+          depth: woptions.depth
         });
       }
 
       if (typeof data === 'object') {
         data = util.inspect(data, {
-          depth: level.depth === null ? woptions.depth : level.depth
+          depth: woptions.depth
         });
       }
     }
@@ -368,13 +337,14 @@ export default class Worker {
       icon: level.icon,
       box,
       data,
+      error,
       callback
     };
 
     try {
-      console[level.fn](this.format(format, options));
-    } catch (error) {
-      console.error(`${error.message}: %j`, options);
+      level.stream.write(this.stringify(format, options) + '\n');
+    } catch (writeError) {
+      console.error(writeError);
     }
   }
 
@@ -408,5 +378,13 @@ export default class Worker {
     if (this._worker) {
       this._worker.handle(box, data, callback);
     }
+  }
+
+  stringify(string, values) {
+    if (Array.isArray(values)) {
+      return values.filter((v) => v).join(string);
+    }
+
+    return sprintf.sprintf(string, values);
   }
 }
