@@ -37,7 +37,7 @@ export default class Timer extends Worker {
             this._id, this._schedule);
         }
 
-        this.handle({});
+        this._execute();
       });
     }
 
@@ -48,12 +48,19 @@ export default class Timer extends Worker {
             this._id, this._interval);
         }
 
-        this.handle({});
+        this._execute();
       }, this._interval);
     }
 
     if (this._immediate === true) {
-      this.handle({});
+      this._execute();
     }
+  }
+
+  _execute() {
+    const box = {};
+    const data = this.filter(box);
+
+    this.handle(box, data);
   }
 }
