@@ -5,18 +5,11 @@ export default class Timer extends Worker {
   constructor(options = {}) {
     super(options);
 
-    this._immediate = null;
     this._interval = null;
     this._schedule = null;
 
-    this.setImmediate(options.immediate);
     this.setInterval(options.interval);
     this.setSchedule(options.schedule);
-  }
-
-  setImmediate(value = null) {
-    this._immediate = value;
-    return this;
   }
 
   setInterval(value = null) {
@@ -29,38 +22,78 @@ export default class Timer extends Worker {
     return this;
   }
 
-  start() {
+  start(immediate) {
     if (this._schedule !== null) {
-      scheduleJob(this._schedule, () => {
-        if (this._log === 'time') {
-          console.log('timer (%s): schedule=%s',
-            this._id, this._schedule);
-        }
-
-        this._execute();
-      });
+      this._executeSchedule();
     }
 
     if (this._interval !== null) {
-      setInterval(() => {
-        if (this._log === 'time') {
-          console.log('timer (%s): interval=%s',
-            this._id, this._interval);
-        }
-
-        this._execute();
-      }, this._interval);
+      this._executeInterval();
     }
 
-    if (this._immediate === true) {
-      this._execute();
+    if (immediate === true) {
+      this._execute({
+        immediate
+      });
     }
   }
 
-  _execute() {
-    const box = {};
+  _execute(box) {
     const data = this.filter(box);
-
     this.handle(box, data);
+  }
+
+  _executeInterval() {
+    const interval = typeof this._interval === 'number' ?
+      ({ default: this._interval }) :
+      this._interval;
+
+    const names = Object.keys(interval);
+    let name = null;
+
+    for (let i = 0; i < names.length; i += 1) {
+      name = names[i];
+      this._makeInterval(name, interval[name]);
+    }
+  }
+
+  _executeSchedule() {
+    const schedule = typeof this._schedule === 'string' ?
+      ({ default: this._schedule }) :
+      this._schedule;
+
+    const names = Object.keys(schedule);
+    let name = null;
+
+    for (let i = 0; i < names.length; i += 1) {
+      name = names[i];
+      this._makeSchedule(name, schedule[name]);
+    }
+  }
+
+  _makeInterval(name, interval) {
+    setInterval(() => {
+      if (this._log === 'time') {
+        console.log('timer (%s): interval=%s',
+          this._id, this._interval);
+      }
+
+      this._execute({
+        interval: name
+      });
+    }, interval);
+  }
+
+  _makeSchedule(name, schedule) {
+    scheduleJob(schedule, () => {
+      if (this._log === 'time') {
+        console.log('timer (%s): schedule=%s',
+          this._id, this._schedule);
+      }
+
+      this._execute({
+        schedule: name
+      });
+    });
   }
 }
