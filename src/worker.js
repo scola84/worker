@@ -1,28 +1,26 @@
 import merge from 'lodash-es/merge';
 import sprintf from 'sprintf-js';
-import util from 'util';
 
 const woptions = {
-  depth: 0,
   filter: 'fail',
-  format: '%(icon)s %(date)s %(description)s %(error)s',
+  format: '%(date)s %(description)s',
   id: 0,
   levels: {
     fail: {
       icon: '\x1b[31m✖\x1b[0m',
-      stream: process.stderr
-    },
-    pass: {
-      icon: '\x1b[32m✔\x1b[0m',
-      stream: process.stdout
-    },
-    skip: {
-      icon: ' ',
-      stream: process.stdout
+      logger: console
     },
     info: {
       icon: ' ',
-      stream: process.stdout
+      logger: console
+    },
+    pass: {
+      icon: '\x1b[32m✔\x1b[0m',
+      logger: console
+    },
+    skip: {
+      icon: ' ',
+      logger: console
     }
   }
 };
@@ -162,26 +160,6 @@ export default class Worker {
     return this;
   }
 
-  check(object, properties, strict = false) {
-    let property = null;
-
-    for (let i = 0; i < properties.length; i += 1) {
-      property = properties[i];
-
-      if (typeof object[property] === 'undefined') {
-        throw new Error(`Property ${property} is undefined`);
-      }
-
-      if (object[property] === null) {
-        throw new Error(`Property ${property} is null`);
-      }
-
-      if (strict === true && object[property] === '') {
-        throw new Error(`Property ${property} is an empty string`);
-      }
-    }
-  }
-
   clone() {
     return new this.constructor({
       act: this._act,
@@ -205,16 +183,6 @@ export default class Worker {
 
     this._worker = worker.setParent(this);
     return worker;
-  }
-
-  copy(worker) {
-    return this
-      .setAct(worker.getAct())
-      .setDecide(worker.getDecide())
-      .setErr(worker.getErr())
-      .setFilter(worker.getFilter())
-      .setLog(worker.getLog())
-      .setMerge(worker.getMerge());
   }
 
   decide(box, data) {
@@ -296,11 +264,15 @@ export default class Worker {
     let error = '';
 
     if (name === 'fail') {
-      if (data instanceof Error === true && data.logged !== true) {
-        data.logged = true;
-        error = data.stack;
+      const unlogged = data instanceof Error === true &&
+        data.logged !== true;
+      const onlyFail = woptions.filter.indexOf(',') === -1;
+
+      if (unlogged) {
+        error = data;
+        error.logged = true;
         data = '';
-      } else if (woptions.filter.indexOf(',') === -1) {
+      } else if (onlyFail) {
         return;
       }
     }
@@ -313,38 +285,19 @@ export default class Worker {
     const description = this.resolve(this._description,
       box, data, ...extra);
 
-    if (util) {
-      if (Buffer.isBuffer(data)) {
-        data = String(data);
-      }
-
-      if (typeof box === 'object') {
-        box = util.inspect(box, {
-          depth: woptions.depth
-        });
-      }
-
-      if (typeof data === 'object') {
-        data = util.inspect(data, {
-          depth: woptions.depth
-        });
-      }
-    }
-
     const options = {
       date: new Date().toISOString(),
       description: description || this.constructor.name,
       icon: level.icon,
       box,
       data,
-      error,
       callback
     };
 
     try {
-      level.stream.write(this.stringify(format, options) + '\n');
+      level.logger.log(this.stringify(format, options), error);
     } catch (writeError) {
-      console.error(writeError);
+      console.log('Could not write to log', writeError);
     }
   }
 
