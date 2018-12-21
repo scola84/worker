@@ -1,6 +1,12 @@
 import merge from 'lodash-es/merge';
 import sprintf from 'sprintf-js';
 
+const logger = {
+  log(...args) {
+    console.log(...args);
+  }
+};
+
 const woptions = {
   filter: 'fail',
   format: '%(date)s %(description)s',
@@ -8,19 +14,19 @@ const woptions = {
   levels: {
     fail: {
       icon: '\x1b[31m✖\x1b[0m',
-      logger: console
+      logger
     },
     info: {
       icon: ' ',
-      logger: console
+      logger
     },
     pass: {
       icon: '\x1b[32m✔\x1b[0m',
-      logger: console
+      logger
     },
     skip: {
       icon: ' ',
-      logger: console
+      logger
     }
   }
 };
@@ -279,20 +285,27 @@ export default class Worker {
 
     const level = woptions.levels[name];
 
-    const format = this.resolve(woptions.format,
-      box, data, ...extra);
-
     const description = this.resolve(this._description,
-      box, data, ...extra);
+      box, data || error, ...extra);
 
     const options = {
       date: new Date().toISOString(),
       description: description || this.constructor.name,
       icon: level.icon,
+      id: this._id,
+      name: this.constructor.name,
       box,
       data,
+      error,
       callback
     };
+
+    const format = this.resolve(woptions.format,
+      options, ...extra);
+
+    if (format === null) {
+      return;
+    }
 
     try {
       level.logger.log(this.stringify(format, options), error);

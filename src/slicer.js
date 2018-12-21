@@ -77,7 +77,7 @@ export default class Slicer extends Worker {
 
     for (let i = 0; i < items.length; i += this._count) {
       [arg1, arg2] = this.merge(box, data, items, i, i + this._count);
-      this._handlePick(arg1, arg2, callback, i);
+      this._pickAndPass(arg1, arg2, callback, i);
     }
   }
 
@@ -92,7 +92,7 @@ export default class Slicer extends Worker {
     return [box, data];
   }
 
-  _handlePick(box, data, callback, index) {
+  _pickAndPass(box, data, callback, index) {
     if (this._count > 1) {
       this.pass(box, data, callback);
       return;
