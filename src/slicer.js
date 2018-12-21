@@ -6,11 +6,13 @@ export default class Slicer extends Worker {
 
     this._count = null;
     this._name = null;
+    this._pick = null;
     this._unify = null;
     this._wrap = null;
 
     this.setCount(options.count);
     this.setName(options.name);
+    this.setPick(options.pick);
     this.setUnify(options.unify);
     this.setWrap(options.wrap);
   }
@@ -22,6 +24,11 @@ export default class Slicer extends Worker {
 
   setName(value = 'default') {
     this._name = value;
+    return this;
+  }
+
+  setPick(value = { index: 1, total: 1 }) {
+    this._pick = value;
     return this;
   }
 
@@ -70,7 +77,7 @@ export default class Slicer extends Worker {
 
     for (let i = 0; i < items.length; i += this._count) {
       [arg1, arg2] = this.merge(box, data, items, i, i + this._count);
-      this.pass(arg1, arg2, callback);
+      this._handlePick(arg1, arg2, callback, i);
     }
   }
 
@@ -83,5 +90,21 @@ export default class Slicer extends Worker {
     data = this._count === 1 ? data.pop() : data;
 
     return [box, data];
+  }
+
+  _handlePick(box, data, callback, index) {
+    if (this._count > 1) {
+      this.pass(box, data, callback);
+      return;
+    }
+
+    if (((index % this._pick.total) + 1) === this._pick.index) {
+      this.pass(box, data, callback);
+      return;
+    }
+
+    if (this._bypass) {
+      this._bypass.handle(box, data, callback);
+    }
   }
 }

@@ -74,7 +74,6 @@ export default class Rotator extends Timer {
       box = this._wrap === true ? box.box : box;
       this.pass(box, data, callback);
     }
-
   }
 
   _forward(box, data, callback) {
