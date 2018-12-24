@@ -22,7 +22,11 @@ export default class Timer extends Worker {
     return this;
   }
 
-  start(immediate) {
+  start(mode = 1) {
+    if ((mode & 1) === 0) {
+      return;
+    }
+
     if (this._schedule !== null) {
       this._executeSchedule();
     }
@@ -31,9 +35,9 @@ export default class Timer extends Worker {
       this._executeInterval();
     }
 
-    if (immediate === true) {
+    if ((mode & 2) === 2) {
       this._execute({
-        immediate
+        immediate: true
       });
     }
   }
