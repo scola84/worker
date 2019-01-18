@@ -261,7 +261,10 @@ export default class Worker {
   }
 
   log(name, box, data, callback, ...extra) {
-    if (woptions.filter.indexOf(name) === -1) {
+    const filter = woptions.filter === 'all' ?
+      'pass,fail,skip,info' : woptions.filter;
+
+    if (filter.indexOf(name) === -1) {
       if (this._log !== true) {
         return;
       }
@@ -272,7 +275,7 @@ export default class Worker {
     if (name === 'fail') {
       const unlogged = data instanceof Error === true &&
         data.logged !== true;
-      const onlyFail = woptions.filter.indexOf(',') === -1;
+      const onlyFail = filter.indexOf(',') === -1;
 
       if (unlogged) {
         error = data;
