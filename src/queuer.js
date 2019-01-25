@@ -55,6 +55,10 @@ export default class Queuer extends Worker {
     this._queue = this._name === null ?
       createQueue(this._concurrency) :
       queues[this._name];
+
+    if (typeof this._queue === 'undefined') {
+      throw new Error(`Queue not defined (name=${this._name})`);
+    }
   }
 }
 
