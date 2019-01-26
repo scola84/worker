@@ -191,9 +191,9 @@ export default class Worker {
     return worker;
   }
 
-  decide(box, data) {
+  decide(box, data, callback) {
     if (this._decide) {
-      return this._decide(box, data);
+      return this._decide(box, data, callback);
     }
 
     return true;
