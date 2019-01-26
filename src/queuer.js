@@ -4,8 +4,24 @@ import Worker from './worker';
 const queues = {};
 
 export default class Queuer extends Worker {
-  static createQueue(concurrency, name) {
-    return createQueue(concurrency, name);
+  static createQueue(concurrency, name, timeout) {
+    const queue = asyncQueue((fn, callback) => {
+      if (timeout !== null) {
+        setTimeout(() => fn(callback), timeout);
+      } else {
+        fn(callback);
+      }
+    }, concurrency);
+
+    if (name !== null) {
+      if (typeof queues[name] !== 'undefined') {
+        throw new Error(`Queue already defined (name=${name})`);
+      }
+
+      queues[name] = queue;
+    }
+
+    return queue;
   }
 
   constructor(options = {}) {
@@ -14,9 +30,11 @@ export default class Queuer extends Worker {
     this._concurrency = null;
     this._name = null;
     this._queue = null;
+    this._timeout = null;
 
     this.setConcurrency(options.concurrency);
     this.setName(options.name);
+    this.setTimeout(options.timeout);
   }
 
   setConcurrency(value = 1) {
@@ -26,6 +44,11 @@ export default class Queuer extends Worker {
 
   setName(value = null) {
     this._name = value;
+    return this;
+  }
+
+  setTimeout(value = null) {
+    this._timeout = value;
     return this;
   }
 
@@ -53,27 +76,11 @@ export default class Queuer extends Worker {
 
   _createQueue() {
     this._queue = this._name === null ?
-      createQueue(this._concurrency) :
+      Queuer.createQueue(this._concurrency, this._name, this._timeout) :
       queues[this._name];
 
     if (typeof this._queue === 'undefined') {
       throw new Error(`Queue not defined (name=${this._name})`);
     }
   }
-}
-
-function createQueue(concurrency, name) {
-  const queue = asyncQueue((fn, callback) => {
-    fn(callback);
-  }, concurrency);
-
-  if (typeof name !== 'undefined') {
-    if (typeof queues[name] !== 'undefined') {
-      throw new Error(`Queue already defined (name=${name})`);
-    }
-
-    queues[name] = queue;
-  }
-
-  return queue;
 }
