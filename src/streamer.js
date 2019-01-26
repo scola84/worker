@@ -1,14 +1,33 @@
 import Worker from './worker';
 
 export default class Streamer extends Worker {
-  constructor(methods = {}) {
-    super(methods);
+  constructor(options = {}) {
+    super(options);
 
     this._name = ['stream', this._id].join('_');
 
-    this._data = methods.data;
-    this._end = methods.end;
-    this._stream = methods.stream;
+    this._data = null;
+    this._end = null;
+    this._stream = null;
+
+    this.setData(options.data);
+    this.setEnd(options.end);
+    this.setStream(options.stream);
+  }
+
+  setData(value = null) {
+    this._data = value;
+    return this;
+  }
+
+  setEnd(value = null) {
+    this._end = value;
+    return this;
+  }
+
+  setStream(value = null) {
+    this._stream = value;
+    return this;
   }
 
   data(box, data) {
