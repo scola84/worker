@@ -1,8 +1,8 @@
 import Broadcaster from './broadcaster';
 
 export default class Dealer extends Broadcaster {
-  constructor(methods) {
-    super(methods);
+  constructor(options) {
+    super(options);
     this._pointer = 0;
   }
 

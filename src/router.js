@@ -1,8 +1,8 @@
 import Worker from './worker';
 
 export default class Router extends Worker {
-  constructor(methods) {
-    super(methods);
+  constructor(options) {
+    super(options);
     this._workers = {};
   }
 
