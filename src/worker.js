@@ -284,6 +284,10 @@ export default class Worker {
       } else if (onlyFail) {
         return;
       }
+
+      if (error && error.data && error.data.password) {
+        delete error.data.password;
+      }
     }
 
     const level = woptions.levels[name];
