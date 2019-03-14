@@ -36,6 +36,10 @@ export default class Worker {
     return woptions.id;
   }
 
+  static getOptions() {
+    return woptions;
+  }
+
   static setOptions(options) {
     merge(woptions, options);
   }
