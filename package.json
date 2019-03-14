@@ -1,6 +1,6 @@
 {
   "name": "@scola/worker",
-  "version": "2.14.2",
+  "version": "2.14.3",
   "description": "Worker",
   "repository": "github:scola84/worker",
   "author": "M.C. van den Boogaart <scola@kvdb.name>",
