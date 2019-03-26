@@ -58,6 +58,10 @@ export default class Queuer extends Worker {
     }
 
     this._queue.push((callback) => {
+      if (this._wrap) {
+        box = { box };
+      }
+
       this.pass(box, data, (...args) => {
         callback(...args);
 

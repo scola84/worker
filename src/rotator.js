@@ -7,12 +7,10 @@ export default class Rotator extends Timer {
     this._begin = null;
     this._count = null;
     this._offset = null;
-    this._wrap = null;
 
     this.setBegin(options.begin);
     this.setCount(options.count);
     this.setOffset(options.offset);
-    this.setWrap(options.wrap);
   }
 
   setBegin(value = null) {
@@ -27,11 +25,6 @@ export default class Rotator extends Timer {
 
   setOffset(value = 0) {
     this._offset = value;
-    return this;
-  }
-
-  setWrap(value = false) {
-    this._wrap = value;
     return this;
   }
 

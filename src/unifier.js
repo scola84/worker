@@ -6,11 +6,9 @@ export default class Unifier extends Worker {
 
     this._collect = null;
     this._name = null;
-    this._wrap = null;
 
     this.setCollect(options.collect);
     this.setName(options.name);
-    this.setWrap(options.wrap);
   }
 
   setCollect(value = false) {
@@ -20,11 +18,6 @@ export default class Unifier extends Worker {
 
   setName(value = 'default') {
     this._name = value;
-    return this;
-  }
-
-  setWrap(value = false) {
-    this._wrap = value;
     return this;
   }
 

@@ -58,6 +58,7 @@ export default class Worker {
     this._filter = null;
     this._log = null;
     this._merge = null;
+    this._wrap = null;
 
     this.setAct(options.act);
     this.setDecide(options.decide);
@@ -67,6 +68,7 @@ export default class Worker {
     this.setId(options.id);
     this.setLog(options.log);
     this.setMerge(options.merge);
+    this.setWrap(options.wrap);
   }
 
   getAct() {
@@ -147,6 +149,15 @@ export default class Worker {
 
   setParent(value = null) {
     this._parent = value;
+    return this;
+  }
+
+  getWrap() {
+    return this._wrap;
+  }
+
+  setWrap(value = false) {
+    this._wrap = value;
     return this;
   }
 

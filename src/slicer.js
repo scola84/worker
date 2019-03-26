@@ -8,13 +8,11 @@ export default class Slicer extends Worker {
     this._name = null;
     this._pick = null;
     this._unify = null;
-    this._wrap = null;
 
     this.setCount(options.count);
     this.setName(options.name);
     this.setPick(options.pick);
     this.setUnify(options.unify);
-    this.setWrap(options.wrap);
   }
 
   setCount(value = 1) {
@@ -34,11 +32,6 @@ export default class Slicer extends Worker {
 
   setUnify(value = true) {
     this._unify = value;
-    return this;
-  }
-
-  setWrap(value = false) {
-    this._wrap = value;
     return this;
   }
 
