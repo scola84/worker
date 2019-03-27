@@ -71,6 +71,19 @@ export default class Worker {
     this.setWrap(options.wrap);
   }
 
+  getOptions() {
+    return {
+      act: this._act,
+      decide: this._decide,
+      description: this._description,
+      err: this._err,
+      filter: this._filter,
+      log: this._log,
+      merge: this._merge,
+      wrap: this._wrap
+    };
+  }
+
   getAct() {
     return this._act;
   }
@@ -179,17 +192,6 @@ export default class Worker {
 
     this._bypass = worker;
     return this;
-  }
-
-  clone() {
-    return new this.constructor({
-      act: this._act,
-      decide: this._decide,
-      err: this._err,
-      filter: this._filter,
-      log: this._log,
-      merge: this._merge
-    });
   }
 
   connect(worker = null) {

@@ -27,9 +27,10 @@ export default class Queuer extends Worker {
   constructor(options = {}) {
     super(options);
 
+    this._queue = null;
+
     this._concurrency = null;
     this._name = null;
-    this._queue = null;
     this._timeout = null;
 
     this.setConcurrency(options.concurrency);
@@ -37,14 +38,34 @@ export default class Queuer extends Worker {
     this.setTimeout(options.timeout);
   }
 
+  getOptions() {
+    return Object.assign(super.getOptions(), {
+      concurrency: this._concurrency,
+      name: this._name,
+      timeout: this._timeout
+    });
+  }
+
+  getConcurrency() {
+    return this._concurrency;
+  }
+
   setConcurrency(value = 1) {
     this._concurrency = value;
     return this;
   }
 
+  getName() {
+    return this._name;
+  }
+
   setName(value = null) {
     this._name = value;
     return this;
+  }
+
+  getTimeout() {
+    return this._timeout;
   }
 
   setTimeout(value = null) {

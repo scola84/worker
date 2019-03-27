@@ -15,14 +15,34 @@ export default class Streamer extends Worker {
     this.setStream(options.stream);
   }
 
+  getOptions() {
+    return Object.assign(super.getOptions(), {
+      data: this._data,
+      end: this._end,
+      stream: this._stream
+    });
+  }
+
+  getData() {
+    return this._data;
+  }
+
   setData(value = null) {
     this._data = value;
     return this;
   }
 
+  getEnd() {
+    return this._end;
+  }
+
   setEnd(value = null) {
     this._end = value;
     return this;
+  }
+
+  getStream() {
+    return this._stream;
   }
 
   setStream(value = null) {

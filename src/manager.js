@@ -10,6 +10,16 @@ export default class Manager extends Worker {
     this.setNames(options.names);
   }
 
+  getOptions() {
+    return Object.assign(super.getOptions(), {
+      names: this._names
+    });
+  }
+
+  getNames() {
+    return this._names;
+  }
+
   setNames(value = null) {
     this._names = value;
     return this;

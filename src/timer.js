@@ -12,9 +12,24 @@ export default class Timer extends Worker {
     this.setSchedule(options.schedule);
   }
 
+  getOptions() {
+    return Object.assign(super.getOptions(), {
+      interval: this._interval,
+      schedule: this._schedule
+    });
+  }
+
+  getInterval() {
+    return this._interval;
+  }
+
   setInterval(value = null) {
     this._interval = value;
     return this;
+  }
+
+  getSchedule() {
+    return this._schedule;
   }
 
   setSchedule(value = null) {

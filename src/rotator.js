@@ -13,14 +13,34 @@ export default class Rotator extends Timer {
     this.setOffset(options.offset);
   }
 
+  getOptions() {
+    return Object.assign(super.getOptions(), {
+      begin: this._begin,
+      count: this._count,
+      offset: this._offset,
+    });
+  }
+
+  getBegin() {
+    return this._begin;
+  }
+
   setBegin(value = null) {
     this._begin = value;
     return this;
   }
 
+  getCount() {
+    return this._count;
+  }
+
   setCount(value = 10) {
     this._count = value;
     return this;
+  }
+
+  getOffset() {
+    return this._offset;
   }
 
   setOffset(value = 0) {

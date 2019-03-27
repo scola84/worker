@@ -15,9 +15,26 @@ export default class Slicer extends Worker {
     this.setUnify(options.unify);
   }
 
+  getOptions() {
+    return Object.assign(super.getOptions(), {
+      count: this._count,
+      name: this._name,
+      pick: this._pick,
+      unify: this._unify
+    });
+  }
+
+  getCount() {
+    return this._count;
+  }
+
   setCount(value = 1) {
     this._count = value;
     return this;
+  }
+
+  getName() {
+    return this._name;
   }
 
   setName(value = 'default') {
@@ -25,9 +42,17 @@ export default class Slicer extends Worker {
     return this;
   }
 
+  getPick() {
+    return this._pick;
+  }
+
   setPick(value = { index: 1, total: 1 }) {
     this._pick = value;
     return this;
+  }
+
+  getUnify() {
+    return this._unify;
   }
 
   setUnify(value = true) {
