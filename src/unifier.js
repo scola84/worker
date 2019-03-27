@@ -6,9 +6,22 @@ export default class Unifier extends Worker {
 
     this._collect = null;
     this._name = null;
+    this._sync = null;
 
     this.setCollect(options.collect);
     this.setName(options.name);
+    this.setSync(options.sync);
+  }
+
+  getOptions() {
+    return Object.assign(super.getOptions(), {
+      collect: this._collect,
+      name: this._name
+    });
+  }
+
+  getCollect() {
+    return this._collect;
   }
 
   setCollect(value = false) {
@@ -16,8 +29,21 @@ export default class Unifier extends Worker {
     return this;
   }
 
+  getName() {
+    return this._name;
+  }
+
   setName(value = 'default') {
     this._name = value;
+    return this;
+  }
+
+  getSync() {
+    return this._sync;
+  }
+
+  setSync(value = false) {
+    this._sync = value;
     return this;
   }
 
@@ -44,7 +70,11 @@ export default class Unifier extends Worker {
         this._name, unify.count, unify.total, unify.empty);
     }
 
-    if (pass === true) {
+    if (pass === false) {
+      if (this._sync) {
+        callback();
+      }
+    } else if (pass === true) {
       if (this._collect === true) {
         data = unify.data;
         delete unify.data;
