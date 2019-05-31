@@ -11,6 +11,7 @@ export default {
     file: 'dist/worker.cjs.js',
     format: 'cjs'
   }, {
+    extend: true,
     file: 'dist/worker.umd.js',
     format: 'umd',
     name: 'scola'
