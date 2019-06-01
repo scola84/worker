@@ -1,4 +1,4 @@
-import { scheduleJob } from 'node-schedule';
+import cron from 'node-cron';
 import Worker from './worker';
 
 export default class Timer extends Worker {
@@ -104,7 +104,7 @@ export default class Timer extends Worker {
   }
 
   _makeSchedule(name, schedule) {
-    scheduleJob(schedule, () => {
+    cron.schedule(schedule, () => {
       if (this._log === 'time') {
         console.log('timer (%s): schedule=%s',
           this._id, this._schedule);
