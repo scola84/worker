@@ -1,47 +1,11 @@
-import merge from 'lodash-es/merge';
 import sprintf from 'sprintf-js';
+import { log } from '../helper';
 
-const logger = {
-  log(...args) {
-    console.log(...args);
-  }
-};
-
-const woptions = {
-  filter: 'fail',
-  format: '%(date)s %(description)s',
-  id: 0,
-  levels: {
-    fail: {
-      icon: '\x1b[31m✖\x1b[0m',
-      logger
-    },
-    info: {
-      icon: ' ',
-      logger
-    },
-    pass: {
-      icon: '\x1b[32m✔\x1b[0m',
-      logger
-    },
-    skip: {
-      icon: ' ',
-      logger
-    }
-  }
-};
+let id = 0;
 
 export default class Worker {
   static getId() {
-    return woptions.id;
-  }
-
-  static getOptions() {
-    return woptions;
-  }
-
-  static setOptions(options) {
-    merge(woptions, options);
+    return id;
   }
 
   constructor(options = {}) {
@@ -133,7 +97,7 @@ export default class Worker {
     return this._id;
   }
 
-  setId(value = ++woptions.id) {
+  setId(value = ++id) {
     this._id = value;
     return this;
   }
@@ -278,64 +242,7 @@ export default class Worker {
   }
 
   log(name, box, data, callback, ...extra) {
-    const filter = woptions.filter === 'all' ?
-      'pass,fail,skip,info' : woptions.filter;
-
-    if (filter.indexOf(name) === -1) {
-      if (this._log !== true) {
-        return;
-      }
-    }
-
-    let error = '';
-
-    if (name === 'fail') {
-      const unlogged = data instanceof Error === true &&
-        data.logged !== true;
-      const onlyFail = filter.indexOf(',') === -1;
-
-      if (unlogged) {
-        error = data;
-        error.logged = true;
-        data = '';
-      } else if (onlyFail) {
-        return;
-      }
-
-      if (error && error.data && error.data.password) {
-        delete error.data.password;
-      }
-    }
-
-    const level = woptions.levels[name];
-
-    const description = this.resolve(this._description,
-      box, data || error, ...extra);
-
-    const options = {
-      date: new Date().toISOString(),
-      description: description || this.constructor.name,
-      icon: level.icon,
-      id: this._id,
-      name: this.constructor.name,
-      box,
-      data,
-      error,
-      callback
-    };
-
-    const format = this.resolve(woptions.format,
-      options, ...extra);
-
-    if (format === null) {
-      return;
-    }
-
-    try {
-      level.logger.log(this.stringify(format, options), error);
-    } catch (writeError) {
-      console.log('Could not write to log', writeError);
-    }
+    log(this, name, box, data, callback, ...extra);
   }
 
   merge(box, data, ...extra) {
@@ -354,12 +261,13 @@ export default class Worker {
     }
   }
 
-  resolve(fn, ...args) {
-    if (typeof fn === 'function') {
-      return this.resolve(fn(...args), ...args);
+  resolve(box, data, value, ...args) {
+    if (typeof value === 'function') {
+      value = value(box, data, ...args);
+      return this.resolve(box, data, value, ...args);
     }
 
-    return fn;
+    return value;
   }
 
   skip(box, data, callback) {
