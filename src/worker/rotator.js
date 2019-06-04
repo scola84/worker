@@ -50,10 +50,44 @@ export default class Rotator extends Timer {
 
   act(box, data, callback) {
     if (this._begin) {
-      this._back(box, data, callback);
+      this.back(box, data, callback);
     } else {
-      this._forward(box, data, callback);
+      this.forward(box, data, callback);
     }
+  }
+
+  back(box, data, callback) {
+    const count = this.filter(box, data);
+
+    if (this._log === 'rotate') {
+      console.log('rotator (%s): fn=back, limit=%j, count=%s',
+        this._id, box.limit, count);
+    }
+
+    const result = this._begin.rotate(box, data, callback, count);
+
+    if (result === true) {
+      box = this._wrap === true ? box.box : box;
+      this.pass(box, data, callback);
+    }
+  }
+
+  forward(box, data, callback) {
+    if (this._wrap === true) {
+      box = { box };
+    }
+
+    box.limit = box.limit || {
+      count: this._count,
+      offset: 0
+    };
+
+    if (this._log === 'rotate') {
+      console.log('rotator (%s): fn=forward, limit=%j',
+        this._id, box.limit);
+    }
+
+    this.pass(box, data, callback);
   }
 
   rotate(box, data, callback, count) {
@@ -71,39 +105,5 @@ export default class Rotator extends Timer {
     }
 
     return true;
-  }
-
-  _back(box, data, callback) {
-    const count = this.filter(box, data);
-
-    if (this._log === 'rotate') {
-      console.log('rotator (%s): fn=back, limit=%j, count=%s',
-        this._id, box.limit, count);
-    }
-
-    const result = this._begin.rotate(box, data, callback, count);
-
-    if (result === true) {
-      box = this._wrap === true ? box.box : box;
-      this.pass(box, data, callback);
-    }
-  }
-
-  _forward(box, data, callback) {
-    if (this._wrap === true) {
-      box = { box };
-    }
-
-    box.limit = box.limit || {
-      count: this._count,
-      offset: 0
-    };
-
-    if (this._log === 'rotate') {
-      console.log('rotator (%s): fn=forward, limit=%j',
-        this._id, box.limit);
-    }
-
-    this.pass(box, data, callback);
   }
 }

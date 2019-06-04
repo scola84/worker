@@ -50,6 +50,61 @@ export default class Streamer extends Worker {
     return this;
   }
 
+  createReadStream(box, data) {
+    const streamer = this.createStream(box, data);
+
+    if (streamer.read === true) {
+      return streamer;
+    }
+
+    streamer.read = true;
+
+    streamer.stream.on('data', (d) => {
+      this.data(box, d);
+    });
+
+    streamer.stream.once('end', () => {
+      this.end(box);
+    });
+
+    return streamer;
+  }
+
+  createStream(box, data) {
+    let streamer = box[this._name];
+
+    if (typeof streamer === 'undefined') {
+      streamer = {
+        data: [],
+        paused: false,
+        read: false,
+        stream: this.stream(box, data),
+        write: false
+      };
+
+      box[this._name] = streamer;
+
+      if (streamer.stream.listenerCount('error') === 0) {
+        streamer.stream.once('error', (error) => {
+          this.fail(box, error);
+        });
+      }
+    }
+
+    return streamer;
+  }
+
+  createWriteStream(box) {
+    const streamer = this.createStream(box);
+
+    if (streamer.write === true) {
+      return streamer;
+    }
+
+    streamer.write = true;
+    return streamer;
+  }
+
   data(box, data) {
     if (this._log === 'data') {
       console.log(String(data));
@@ -78,8 +133,28 @@ export default class Streamer extends Worker {
     super.fail(box, error, callback);
   }
 
+  pause(box, callback = () => {}) {
+    box[this._name].paused = true;
+    callback(box, false);
+
+    box[this._name].stream.once('drain', () => {
+      callback(box, true);
+      this.resume(box, callback);
+    });
+  }
+
   read(box, data) {
-    this._createReadStream(box, data);
+    this.createReadStream(box, data);
+  }
+
+  resume(box, callback) {
+    box[this._name].paused = false;
+
+    if (box[this._name].data.length === 0) {
+      return;
+    }
+
+    this.write(box, box[this._name].data.shift(), callback);
   }
 
   stream(box, data) {
@@ -106,7 +181,7 @@ export default class Streamer extends Worker {
       console.log();
     }
 
-    const streamer = this._createWriteStream(box, data);
+    const streamer = this.createWriteStream(box, data);
 
     if (data === null) {
       streamer.stream.end();
@@ -121,84 +196,9 @@ export default class Streamer extends Worker {
     const write = streamer.stream.write(data);
 
     if (write === false) {
-      this._pause(box, callback);
+      this.pause(box, callback);
     } else if (streamer.data.length > 0) {
-      this._resume(box, callback);
+      this.resume(box, callback);
     }
-  }
-
-  _createReadStream(box, data) {
-    const streamer = this._createStream(box, data);
-
-    if (streamer.read === true) {
-      return streamer;
-    }
-
-    streamer.read = true;
-
-    streamer.stream.on('data', (d) => {
-      this.data(box, d);
-    });
-
-    streamer.stream.once('end', () => {
-      this.end(box);
-    });
-
-    return streamer;
-  }
-
-  _createStream(box, data) {
-    let streamer = box[this._name];
-
-    if (typeof streamer === 'undefined') {
-      streamer = {
-        data: [],
-        paused: false,
-        read: false,
-        stream: this.stream(box, data),
-        write: false
-      };
-
-      box[this._name] = streamer;
-
-      if (streamer.stream.listenerCount('error') === 0) {
-        streamer.stream.once('error', (error) => {
-          this.fail(box, error);
-        });
-      }
-    }
-
-    return streamer;
-  }
-
-  _createWriteStream(box) {
-    const streamer = this._createStream(box);
-
-    if (streamer.write === true) {
-      return streamer;
-    }
-
-    streamer.write = true;
-    return streamer;
-  }
-
-  _pause(box, callback = () => {}) {
-    box[this._name].paused = true;
-    callback(box, false);
-
-    box[this._name].stream.once('drain', () => {
-      callback(box, true);
-      this._resume(box, callback);
-    });
-  }
-
-  _resume(box, callback) {
-    box[this._name].paused = false;
-
-    if (box[this._name].data.length === 0) {
-      return;
-    }
-
-    this.write(box, box[this._name].data.shift(), callback);
   }
 }

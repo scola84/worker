@@ -43,26 +43,26 @@ export default class Timer extends Worker {
     }
 
     if (this._schedule !== null) {
-      this._executeSchedule();
+      this.executeSchedule();
     }
 
     if (this._interval !== null) {
-      this._executeInterval();
+      this.executeInterval();
     }
 
     if ((mode & 2) === 2) {
-      this._execute({
+      this.execute({
         immediate: true
       });
     }
   }
 
-  _execute(box) {
+  execute(box) {
     const data = this.filter(box);
     this.handle(box, data);
   }
 
-  _executeInterval() {
+  executeInterval() {
     const interval = typeof this._interval === 'number' ?
       ({ default: this._interval }) :
       this._interval;
@@ -72,11 +72,11 @@ export default class Timer extends Worker {
 
     for (let i = 0; i < names.length; i += 1) {
       name = names[i];
-      this._makeInterval(name, interval[name]);
+      this.makeInterval(name, interval[name]);
     }
   }
 
-  _executeSchedule() {
+  executeSchedule() {
     const schedule = typeof this._schedule === 'string' ?
       ({ default: this._schedule }) :
       this._schedule;
@@ -86,31 +86,31 @@ export default class Timer extends Worker {
 
     for (let i = 0; i < names.length; i += 1) {
       name = names[i];
-      this._makeSchedule(name, schedule[name]);
+      this.makeSchedule(name, schedule[name]);
     }
   }
 
-  _makeInterval(name, interval) {
+  makeInterval(name, interval) {
     setInterval(() => {
       if (this._log === 'time') {
         console.log('timer (%s): interval=%s',
           this._id, this._interval);
       }
 
-      this._execute({
+      this.execute({
         interval: name
       });
     }, interval);
   }
 
-  _makeSchedule(name, schedule) {
+  makeSchedule(name, schedule) {
     cron.schedule(schedule, () => {
       if (this._log === 'time') {
         console.log('timer (%s): schedule=%s',
           this._id, this._schedule);
       }
 
-      this._execute({
+      this.execute({
         schedule: name
       });
     });

@@ -37,6 +37,26 @@ export default class Router extends Worker {
     return box.name;
   }
 
+  find(compare, up = false) {
+    let found = super.find(compare, up);
+
+    if (found !== null) {
+      return found;
+    }
+
+    const names = Object.keys(this._workers);
+
+    for (let i = 0; i < names.length; i += 1) {
+      found = this._workers[names[i]].find(compare, up);
+
+      if (found) {
+        return found;
+      }
+    }
+
+    return found;
+  }
+
   pass(name, box, data, callback) {
     if (this._log === 'route') {
       console.log('router (%s): name=%s, workers=%s',
@@ -48,20 +68,5 @@ export default class Router extends Worker {
     } else if (this._bypass) {
       this._bypass.handle(box, data, callback);
     }
-  }
-
-  _find(compare) {
-    const names = Object.keys(this._workers);
-    let found = null;
-
-    for (let i = 0; i < names.length; i += 1) {
-      found = this._workers[names[i]].find(compare);
-
-      if (found) {
-        return found;
-      }
-    }
-
-    return found;
   }
 }

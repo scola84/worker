@@ -62,6 +62,24 @@ export default class Broadcaster extends Worker {
     return super.connect(worker);
   }
 
+  find(compare, up = false) {
+    let found = super.find(compare, up);
+
+    if (found !== null) {
+      return found;
+    }
+
+    for (let i = 0; i < this._workers.length; i += 1) {
+      found = this._workers[i].find(compare, up);
+
+      if (found) {
+        return found;
+      }
+    }
+
+    return found;
+  }
+
   inject(worker, index) {
     if (worker === null) {
       return this;
@@ -98,39 +116,25 @@ export default class Broadcaster extends Worker {
     }
 
     if (this._sync) {
-      this._passSync(box, data, callback);
+      this.passSync(box, data, callback);
     } else {
-      this._passAsync(box, data, callback);
+      this.passAsync(box, data, callback);
     }
   }
 
-  _passAsync(box, data, callback) {
+  passAsync(box, data, callback) {
     for (let i = 0; i < this._workers.length; i += 1) {
       this._workers[i].handle(box, data, callback);
     }
   }
 
-  _passSync(box, data, callback) {
+  passSync(box, data, callback) {
     const unify = box.unify[this._name];
 
     const cb = unify.count === (unify.total - 1) ?
       callback :
-      () => this._passSync(box, data, callback);
+      () => this.passSync(box, data, callback);
 
     this._workers[unify.count].handle(box, data, cb);
-  }
-
-  _find(compare) {
-    let found = null;
-
-    for (let i = 0; i < this._workers.length; i += 1) {
-      found = this._workers[i].find(compare);
-
-      if (found) {
-        return found;
-      }
-    }
-
-    return found;
   }
 }

@@ -75,7 +75,7 @@ export default class Queuer extends Worker {
 
   act(box, data) {
     if (this._queue === null) {
-      this._createQueue();
+      this.createQueue();
     }
 
     this._queue.push((callback) => {
@@ -99,7 +99,7 @@ export default class Queuer extends Worker {
     }
   }
 
-  _createQueue() {
+  createQueue() {
     this._queue = this._name === null ?
       Queuer.createQueue(this._concurrency, this._name, this._timeout) :
       queues[this._name];

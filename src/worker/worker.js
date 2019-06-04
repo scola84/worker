@@ -212,13 +212,11 @@ export default class Worker {
     }
 
     if (up === false) {
-      if (this._workers) {
-        return this._find(compare);
-      } else if (this._worker) {
-        return this._worker.find(compare);
+      if (this._worker) {
+        return this._worker.find(compare, up);
       }
     } else if (this._parent) {
-      return this._parent.find(compare, false);
+      return this._parent.find(compare, up);
     }
 
     return null;
