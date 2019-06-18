@@ -1,6 +1,6 @@
-import Worker from './worker';
+import { Worker } from './worker';
 
-export default class Router extends Worker {
+export class Router extends Worker {
   constructor(options) {
     super(options);
     this._workers = {};

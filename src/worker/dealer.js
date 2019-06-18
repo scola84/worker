@@ -1,6 +1,6 @@
-import Broadcaster from './broadcaster';
+import { Broadcaster } from './broadcaster';
 
-export default class Dealer extends Broadcaster {
+export class Dealer extends Broadcaster {
   constructor(options) {
     super(options);
     this._pointer = 0;

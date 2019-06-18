@@ -1,7 +1,7 @@
 import cron from 'node-cron';
-import Worker from './worker';
+import { Worker } from './worker';
 
-export default class Timer extends Worker {
+export class Timer extends Worker {
   constructor(options = {}) {
     super(options);
 

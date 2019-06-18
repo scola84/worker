@@ -1,6 +1,6 @@
-import Worker from './worker';
+import { Worker } from './worker';
 
-export default class Streamer extends Worker {
+export class Streamer extends Worker {
   constructor(options = {}) {
     super(options);
 

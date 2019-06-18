@@ -1,6 +1,6 @@
-import Worker from './worker';
+import { Worker } from './worker';
 
-export default class Manager extends Worker {
+export class Manager extends Worker {
   constructor(options = {}) {
     super(options);
 

@@ -1,6 +1,6 @@
-import Timer from './timer';
+import { Timer } from './timer';
 
-export default class Rotator extends Timer {
+export class Rotator extends Timer {
   constructor(options = {}) {
     super(options);
 

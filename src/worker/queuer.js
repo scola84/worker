@@ -1,9 +1,9 @@
 import asyncQueue from 'async/queue';
-import Worker from './worker';
+import { Worker } from './worker';
 
 const queues = {};
 
-export default class Queuer extends Worker {
+export class Queuer extends Worker {
   static createQueue(concurrency, name, timeout) {
     const queue = asyncQueue((fn, callback) => {
       if (timeout !== null) {

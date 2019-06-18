@@ -1,6 +1,6 @@
-import Worker from './worker';
+import { Worker } from './worker';
 
-export default class Slicer extends Worker {
+export class Slicer extends Worker {
   constructor(options = {}) {
     super(options);
 

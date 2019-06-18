@@ -3,7 +3,7 @@ import { log } from '../helper';
 
 let id = 0;
 
-export default class Worker {
+export class Worker {
   static getId() {
     return id;
   }

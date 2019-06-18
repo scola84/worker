@@ -1,6 +1,6 @@
-import Worker from './worker';
+import { Worker } from './worker';
 
-export default class Unifier extends Worker {
+export class Unifier extends Worker {
   constructor(options = {}) {
     super(options);
 
