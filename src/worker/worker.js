@@ -4,10 +4,6 @@ import { log } from '../helper';
 let id = 0;
 
 export class Worker {
-  static getId() {
-    return id;
-  }
-
   constructor(options = {}) {
     this._description = null;
     this._id = null;
