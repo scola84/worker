@@ -279,6 +279,12 @@ export class Worker {
     }
   }
 
+  prepend(worker) {
+    return this._parent
+      .connect(worker)
+      .connect(this);
+  }
+
   resolve(box, data, value, ...args) {
     if (typeof value === 'function') {
       value = value(box, data, ...args);
