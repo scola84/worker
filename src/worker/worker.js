@@ -21,6 +21,7 @@ export class Worker {
     this._wrap = null;
 
     this.setAct(options.act);
+    this.setBypass(options.bypass);
     this.setDecide(options.decide);
     this.setDescription(options.description);
     this.setErr(options.err);
@@ -28,7 +29,9 @@ export class Worker {
     this.setId(options.id);
     this.setLog(options.log);
     this.setMerge(options.merge);
+    this.setParent(options.parent);
     this.setWrap(options.wrap);
+    this.setWorker(options.worker);
   }
 
   getOptions() {
@@ -50,6 +53,15 @@ export class Worker {
 
   setAct(value = null) {
     this._act = value;
+    return this;
+  }
+
+  getBypass() {
+    return this._bypass;
+  }
+
+  setBypass(value = null) {
+    this._bypass = value;
     return this;
   }
 
@@ -131,6 +143,15 @@ export class Worker {
 
   setWrap(value = false) {
     this._wrap = value;
+    return this;
+  }
+
+  getWorker() {
+    return this._worker;
+  }
+
+  setWorker(value = null) {
+    this._worker = value;
     return this;
   }
 
