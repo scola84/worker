@@ -160,10 +160,11 @@ export class Worker {
 
     if (this._act) {
       this._act(box, data, callback);
-    } else {
-      data = this.merge(box, data);
-      this.pass(box, data, callback);
+      return;
     }
+
+    data = this.merge(box, data);
+    this.pass(box, data, callback);
   }
 
   bypass(worker = null) {
@@ -200,9 +201,10 @@ export class Worker {
   err(box, error, callback) {
     if (this._err) {
       this._err(box, error, callback);
-    } else {
-      this.fail(box, error, callback);
+      return;
     }
+
+    this.fail(box, error, callback);
   }
 
   fail(box, error, callback) {
@@ -241,21 +243,22 @@ export class Worker {
 
   handle(box, data, callback) {
     try {
-      const decision = this.decide(box, data, callback);
-
-      if (decision === true) {
-        this.act(box, data, callback);
-      } else if (decision === false) {
-        this.skip(box, data, callback);
-      } else if (this._bypass) {
-        this._bypass.handle(box, data, callback);
-      }
+      this.handleTry(box, data, callback);
     } catch (error) {
-      if (typeof error.data === 'undefined') {
-        error.data = data;
-      }
-
+      error.data = data;
       this.fail(box, error, callback);
+    }
+  }
+
+  handleTry(box, data, callback) {
+    const decision = this.decide(box, data, callback);
+
+    if (decision === true) {
+      this.act(box, data, callback);
+    } else if (decision === false) {
+      this.skip(box, data, callback);
+    } else if (this._bypass) {
+      this._bypass.handle(box, data, callback);
     }
   }
 

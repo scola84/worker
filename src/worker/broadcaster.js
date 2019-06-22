@@ -17,6 +17,7 @@ export class Broadcaster extends Worker {
   getOptions() {
     return Object.assign(super.getOptions(), {
       name: this._name,
+      sync: this._sync,
       unify: this._unify
     });
   }
@@ -80,20 +81,6 @@ export class Broadcaster extends Worker {
     return found;
   }
 
-  inject(worker, index) {
-    if (worker === null) {
-      return this;
-    }
-
-    if (Array.isArray(worker)) {
-      this.inject(worker[0], index);
-      return worker[1];
-    }
-
-    this._workers.splice(index, 0, worker);
-    return worker;
-  }
-
   pass(box, data, callback) {
     if (this._wrap === true) {
       box = { box };
@@ -117,9 +104,10 @@ export class Broadcaster extends Worker {
 
     if (this._sync) {
       this.passSync(box, data, callback);
-    } else {
-      this.passAsync(box, data, callback);
+      return;
     }
+
+    this.passAsync(box, data, callback);
   }
 
   passAsync(box, data, callback) {

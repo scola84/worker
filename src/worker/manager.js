@@ -46,9 +46,10 @@ export class Manager extends Worker {
 
     if (worker) {
       worker.handle(box, data, callback);
-    } else {
-      this.handle(box, data, callback);
+      return;
     }
+
+    this.handle(box, data, callback);
   }
 
   fail(box, error, callback) {

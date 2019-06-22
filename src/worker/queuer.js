@@ -5,13 +5,16 @@ const queues = {};
 
 export class Queuer extends Worker {
   static createQueue(concurrency, name, timeout) {
-    const queue = asyncQueue((fn, callback) => {
-      if (timeout !== null) {
-        setTimeout(() => fn(callback), timeout);
-      } else {
+    function handle(fn, callback) {
+      if (timeout === null) {
         fn(callback);
+        return;
       }
-    }, concurrency);
+
+      setTimeout(() => fn(callback), timeout);
+    }
+
+    const queue = asyncQueue(handle, concurrency);
 
     if (name !== null) {
       if (typeof queues[name] !== 'undefined') {

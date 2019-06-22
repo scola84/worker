@@ -95,4 +95,8 @@ export class Unifier extends Worker {
 
     return typeof box.unify !== 'undefined';
   }
+
+  err(box, error, callback) {
+    this.act(box, error, callback);
+  }
 }

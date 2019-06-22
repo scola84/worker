@@ -83,15 +83,15 @@ export class Slicer extends Worker {
       }
     }
 
-    let arg1 = null;
-    let arg2 = null;
-
     if (items.length === 0) {
       if (this._bypass) {
         [box, data] = this.merge(box, data, items, 0, 0);
         this._bypass.handle(box, data, callback);
       }
     }
+
+    let arg1 = null;
+    let arg2 = null;
 
     for (let i = 0; i < items.length; i += this._count) {
       [arg1, arg2] = this.merge(box, data, items, i, i + this._count);

@@ -9,10 +9,11 @@ export class Router extends Worker {
   act(box, data, callback) {
     if (this._act) {
       this._act(box, data, callback);
-    } else {
-      const name = this.filter(box, data);
-      this.pass(name, box, data, callback);
+      return;
     }
+
+    const name = this.filter(box, data);
+    this.pass(name, box, data, callback);
   }
 
   connect(name, worker = null) {

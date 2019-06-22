@@ -50,13 +50,14 @@ export class Rotator extends Timer {
 
   act(box, data, callback) {
     if (this._begin) {
-      this.back(box, data, callback);
-    } else {
-      this.forward(box, data, callback);
+      this.backward(box, data, callback);
+      return;
     }
+
+    this.forward(box, data, callback);
   }
 
-  back(box, data, callback) {
+  backward(box, data, callback) {
     const count = this.filter(box, data);
 
     if (this._log === 'rotate') {
@@ -70,6 +71,10 @@ export class Rotator extends Timer {
       box = this._wrap === true ? box.box : box;
       this.pass(box, data, callback);
     }
+  }
+
+  err(box, error, callback) {
+    this.act(box, error.data, callback);
   }
 
   forward(box, data, callback) {

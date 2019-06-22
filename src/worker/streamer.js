@@ -113,19 +113,21 @@ export class Streamer extends Worker {
 
     if (this._data) {
       this._data(box, data);
-    } else {
-      this.pass(box, data, (bx, resume) => {
-        this.throttle(box, resume);
-      });
+      return;
     }
+
+    this.pass(box, data, (bx, resume) => {
+      this.throttle(box, resume);
+    });
   }
 
   end(box) {
     if (this._end) {
       this._end(box);
-    } else {
-      this.pass(box, null);
+      return;
     }
+
+    this.pass(box, null);
   }
 
   fail(box, error, callback) {
@@ -168,11 +170,12 @@ export class Streamer extends Worker {
       return;
     }
 
-    if (resume === true) {
-      streamer.stream.resume();
-    } else {
+    if (resume === false) {
       streamer.stream.pause();
+      return;
     }
+
+    streamer.stream.resume();
   }
 
   write(box, data, callback) {
