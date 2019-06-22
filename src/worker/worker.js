@@ -245,7 +245,7 @@ export class Worker {
     try {
       this.handleTry(box, data, callback);
     } catch (error) {
-      error.data = data;
+      error.data = error.data || data;
       this.fail(box, error, callback);
     }
   }
