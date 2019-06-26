@@ -1,5 +1,3 @@
-import sprintf from 'sprintf-js';
-
 let id = 0;
 let log = () => {};
 
@@ -292,28 +290,11 @@ export class Worker {
       .connect(this);
   }
 
-  resolve(box, data, value, ...args) {
-    if (typeof value === 'function') {
-      value = value(box, data, ...args);
-      return this.resolve(box, data, value, ...args);
-    }
-
-    return value;
-  }
-
   skip(box, data, callback) {
     this.log('skip', box, data);
 
     if (this._worker) {
       this._worker.handle(box, data, callback);
     }
-  }
-
-  stringify(string, values) {
-    if (Array.isArray(values)) {
-      return values.filter((v) => v).join(string);
-    }
-
-    return sprintf.sprintf(string, values);
   }
 }

@@ -1,26 +1,32 @@
-import asyncQueue from 'async/queue';
+import createQueue from 'async/queue';
 import { Worker } from './worker';
 
-const queues = {};
+let queues = {};
 
 export class Queuer extends Worker {
-  static createQueue(concurrency, name, timeout) {
-    function handle(fn, callback) {
+  static getQueues() {
+    return queues;
+  }
+
+  static setQueues(value) {
+    queues = value;
+  }
+
+  static createQueue(concurrency, name = null, timeout = null) {
+    function handler(fn, callback) {
       if (timeout === null) {
         fn(callback);
         return;
       }
 
-      setTimeout(() => fn(callback), timeout);
+      setTimeout(() => {
+        fn(callback);
+      }, timeout);
     }
 
-    const queue = asyncQueue(handle, concurrency);
+    const queue = createQueue(handler, concurrency);
 
     if (name !== null) {
-      if (typeof queues[name] !== 'undefined') {
-        throw new Error(`Queue already defined (name=${name})`);
-      }
-
       queues[name] = queue;
     }
 
