@@ -1,9 +1,17 @@
 import sprintf from 'sprintf-js';
-import { log } from '../helper';
 
 let id = 0;
+let log = () => {};
 
 export class Worker {
+  static getLog() {
+    return log;
+  }
+
+  static setLog(value) {
+    log = value;
+  }
+
   constructor(options = {}) {
     this._description = null;
     this._id = null;
@@ -114,7 +122,7 @@ export class Worker {
     return this._log;
   }
 
-  setLog(value = false) {
+  setLog(value = null) {
     this._log = value;
     return this;
   }
@@ -208,7 +216,7 @@ export class Worker {
   }
 
   fail(box, error, callback) {
-    this.log('fail', box, error, callback);
+    this.log('fail', box, error);
 
     if (this._bypass) {
       this._bypass.err(box, error, callback);
@@ -225,17 +233,13 @@ export class Worker {
     return data;
   }
 
-  find(compare, up = false) {
+  find(compare) {
     if (compare(this) === true) {
       return this;
     }
 
-    if (up === false) {
-      if (this._worker) {
-        return this._worker.find(compare, up);
-      }
-    } else if (this._parent) {
-      return this._parent.find(compare, up);
+    if (this._worker) {
+      return this._worker.find(compare);
     }
 
     return null;
@@ -262,8 +266,8 @@ export class Worker {
     }
   }
 
-  log(name, box, data, callback, ...extra) {
-    log(this, name, box, data, callback, ...extra);
+  log(name, ...args) {
+    (this._log || log)(name, this, ...args);
   }
 
   merge(box, data, ...extra) {
@@ -275,7 +279,7 @@ export class Worker {
   }
 
   pass(box, data, callback) {
-    this.log('pass', box, data, callback);
+    this.log('pass', box, data);
 
     if (this._worker) {
       this._worker.handle(box, data, callback);
@@ -298,7 +302,7 @@ export class Worker {
   }
 
   skip(box, data, callback) {
-    this.log('skip', box, data, callback);
+    this.log('skip', box, data);
 
     if (this._worker) {
       this._worker.handle(box, data, callback);

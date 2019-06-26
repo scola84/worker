@@ -60,10 +60,7 @@ export class Rotator extends Timer {
   backward(box, data, callback) {
     const count = this.filter(box, data);
 
-    if (this._log === 'rotate') {
-      console.log('rotator (%s): fn=back, limit=%j, count=%s',
-        this._id, box.limit, count);
-    }
+    this.log('info', box, data, 'backward', count);
 
     const result = this._begin.rotate(box, data, callback, count);
 
@@ -87,11 +84,7 @@ export class Rotator extends Timer {
       offset: 0
     };
 
-    if (this._log === 'rotate') {
-      console.log('rotator (%s): fn=forward, limit=%j',
-        this._id, box.limit);
-    }
-
+    this.log('info', box, data, 'forward');
     this.pass(box, data, callback);
   }
 
@@ -99,10 +92,7 @@ export class Rotator extends Timer {
     box.limit.offset = count > 0 && (count % box.limit.count) === 0 ?
       box.limit.offset + box.limit.count : 0;
 
-    if (this._log === 'rotate') {
-      console.log('rotator (%s): fn=rotate, limit=%j, count=%s, result=%s',
-        this._id, box.limit, count, box.limit.offset === 0);
-    }
+    this.log('info', box, data, 'rotate', count);
 
     if (box.limit.offset > 0) {
       this.pass(box, data, callback);

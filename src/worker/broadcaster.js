@@ -96,10 +96,7 @@ export class Broadcaster extends Worker {
       box.unify = box.unify || {};
       box.unify[this._name] = unify;
 
-      if (this._log === 'unify') {
-        console.log('broadcaster (%s): count=%s, total=%s, empty=%s',
-          this._name, unify.count, unify.total, unify.empty);
-      }
+      this.log('info', box, data, box.unify);
     }
 
     if (this._sync) {

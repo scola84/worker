@@ -92,10 +92,7 @@ export class Timer extends Worker {
 
   makeInterval(name, interval) {
     setInterval(() => {
-      if (this._log === 'time') {
-        console.log('timer (%s): interval=%s',
-          this._id, this._interval);
-      }
+      this.log('info', 'interval', name, interval);
 
       this.execute({
         interval: name
@@ -105,10 +102,7 @@ export class Timer extends Worker {
 
   makeSchedule(name, schedule) {
     cron.schedule(schedule, () => {
-      if (this._log === 'time') {
-        console.log('timer (%s): schedule=%s',
-          this._id, this._schedule);
-      }
+      this.log('info', 'schedule', name, schedule);
 
       this.execute({
         schedule: name

@@ -39,10 +39,7 @@ export class Manager extends Worker {
     const name = box._names.shift();
     const worker = this._pool[name];
 
-    if (this._log === 'manage') {
-      console.log('manager (%s): name=%s, pool=%s',
-        this._id, name, Object.keys(this._pool));
-    }
+    this.log('info', box, data, name);
 
     if (worker) {
       worker.handle(box, data, callback);

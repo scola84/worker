@@ -106,10 +106,7 @@ export class Streamer extends Worker {
   }
 
   data(box, data) {
-    if (this._log === 'data') {
-      console.log(String(data));
-      console.log();
-    }
+    this.log('info', box, data);
 
     if (this._data) {
       this._data(box, data);
@@ -179,10 +176,7 @@ export class Streamer extends Worker {
   }
 
   write(box, data, callback) {
-    if (this._log === 'data') {
-      console.log(String(data));
-      console.log();
-    }
+    this.log('info', box, data);
 
     const streamer = this.createWriteStream(box, data);
 
