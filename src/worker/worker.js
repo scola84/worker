@@ -2,6 +2,24 @@ let id = 0;
 let log = () => {};
 
 export class Worker {
+  static attach(to, a) {
+    Object.keys(a).forEach((b) => {
+      Object.keys(a[b]).forEach((c) => {
+        to.prototype[(
+          to.prototype[c] ||
+          to.prototype.__proto__[c]
+        ) ? b + c : c] = function create(...list) {
+          return new(a[b][c].object)(
+            Object.assign({}, a[b][c].options, {
+              list,
+              builder: this
+            })
+          );
+        };
+      });
+    });
+  }
+
   static getLog() {
     return log;
   }
