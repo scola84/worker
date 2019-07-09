@@ -2,40 +2,6 @@ let id = 0;
 let log = () => {};
 
 export class Worker {
-  static attach(target, objects) {
-    function attach(group, name) {
-      const { object, options } = objects[group][name];
-
-      if (
-        target.prototype[name] ||
-        target.prototype.__proto__[name]
-      ) {
-        name = group + name;
-      }
-
-      target.prototype[name] = function create(...args) {
-        return new object(Object.assign({
-          args,
-          builder: this
-        }, options));
-      };
-    }
-
-    const groups = Object.keys(objects);
-
-    let group = null;
-    let names = null;
-
-    for (let i = 0; i < groups.length; i += 1) {
-      group = groups[i];
-      names = Object.keys(objects[group]);
-
-      for (let j = 0; j < names.length; j += 1) {
-        attach(group, names[j]);
-      }
-    }
-  }
-
   static getLog() {
     return log;
   }

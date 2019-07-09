@@ -1,4 +1,5 @@
 export * from './broadcaster';
+export * from './builder';
 export * from './dealer';
 export * from './manager';
 export * from './queuer';
