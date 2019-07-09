@@ -216,10 +216,14 @@ export class Worker {
   fail(box, error, callback) {
     this.log('fail', box, error);
 
-    if (this._bypass) {
-      this._bypass.err(box, error, callback);
-    } else if (this._worker) {
-      this._worker.err(box, error, callback);
+    try {
+      if (this._bypass) {
+        this._bypass.err(box, error, callback);
+      } else if (this._worker) {
+        this._worker.err(box, error, callback);
+      }
+    } catch (tryError) {
+      console.error(tryError);
     }
   }
 
@@ -244,15 +248,6 @@ export class Worker {
   }
 
   handle(box, data, callback) {
-    try {
-      this.handleTry(box, data, callback);
-    } catch (error) {
-      error.data = error.data || data;
-      this.fail(box, error, callback);
-    }
-  }
-
-  handleTry(box, data, callback) {
     const decision = this.decide(box, data, callback);
 
     if (decision === true) {
@@ -279,8 +274,12 @@ export class Worker {
   pass(box, data, callback) {
     this.log('pass', box, data);
 
-    if (this._worker) {
-      this._worker.handle(box, data, callback);
+    try {
+      if (this._worker) {
+        this._worker.handle(box, data, callback);
+      }
+    } catch (tryError) {
+      this.fail(box, tryError, callback);
     }
   }
 
