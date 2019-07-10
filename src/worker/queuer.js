@@ -12,19 +12,14 @@ export class Queuer extends Worker {
     queues = value;
   }
 
-  static createQueue(concurrency, name = null, timeout = null) {
-    function handler(fn, callback) {
-      if (timeout === null) {
-        fn(callback);
-        return;
-      }
-
-      setTimeout(() => {
-        fn(callback);
-      }, timeout);
+  static createQueue(concurrency, name = null) {
+    if (queues[name]) {
+      return queues[name];
     }
 
-    const queue = createQueue(handler, concurrency);
+    const queue = createQueue((fn, callback) => {
+      fn(callback);
+    }, concurrency);
 
     if (name !== null) {
       queues[name] = queue;
@@ -39,19 +34,16 @@ export class Queuer extends Worker {
     this._concurrency = null;
     this._name = null;
     this._queue = null;
-    this._timeout = null;
 
     this.setConcurrency(options.concurrency);
     this.setName(options.name);
     this.setQueue(options.queue);
-    this.setTimeout(options.timeout);
   }
 
   getOptions() {
     return Object.assign(super.getOptions(), {
       concurrency: this._concurrency,
-      name: this._name,
-      timeout: this._timeout
+      name: this._name
     });
   }
 
@@ -82,41 +74,30 @@ export class Queuer extends Worker {
     return this;
   }
 
-  getTimeout() {
-    return this._timeout;
-  }
-
-  setTimeout(value = null) {
-    this._timeout = value;
-    return this;
-  }
-
-  act(box, data) {
+  act(box, data, callback) {
     if (this._queue === null) {
-      this.createQueue();
+      this._queue = Queuer.createQueue(
+        this._concurrency,
+        this._name
+      );
     }
 
-    this._queue.push((callback) => {
+    this._queue.push((finish) => {
       if (this._wrap) {
         box = { box };
       }
 
-      this.pass(box, data, (...args) => {
-        callback(...args);
+      this.pass(box, data, (next) => {
         this.log('info', box, data, 'callback');
+
+        finish();
+
+        if (next) {
+          next(callback);
+        }
       });
     });
 
     this.log('info', box, data, 'act');
-  }
-
-  createQueue() {
-    this._queue = this._name === null ?
-      Queuer.createQueue(this._concurrency, this._name, this._timeout) :
-      queues[this._name];
-
-    if (typeof this._queue === 'undefined') {
-      throw new Error(`Queue not defined (name=${this._name})`);
-    }
   }
 }
