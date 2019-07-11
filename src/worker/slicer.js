@@ -6,12 +6,10 @@ export class Slicer extends Worker {
 
     this._count = null;
     this._name = null;
-    this._pick = null;
     this._unify = null;
 
     this.setCount(options.count);
     this.setName(options.name);
-    this.setPick(options.pick);
     this.setUnify(options.unify);
   }
 
@@ -19,7 +17,6 @@ export class Slicer extends Worker {
     return Object.assign(super.getOptions(), {
       count: this._count,
       name: this._name,
-      pick: this._pick,
       unify: this._unify
     });
   }
@@ -39,15 +36,6 @@ export class Slicer extends Worker {
 
   setName(value = 'default') {
     this._name = value;
-    return this;
-  }
-
-  getPick() {
-    return this._pick;
-  }
-
-  setPick(value = { index: 1, total: 1 }) {
-    this._pick = value;
     return this;
   }
 
@@ -82,17 +70,15 @@ export class Slicer extends Worker {
 
     if (items.length === 0) {
       if (this._bypass) {
-        [box, data] = this.merge(box, data, items, 0, 0);
         this._bypass.handle(box, data, callback);
       }
     }
 
-    let arg1 = null;
-    let arg2 = null;
-
     for (let i = 0; i < items.length; i += this._count) {
-      [arg1, arg2] = this.merge(box, data, items, i, i + this._count);
-      this.pickAndPass(arg1, arg2, callback, i);
+      this.pass(
+        ...this.merge(box, data, items, i, i + this._count),
+        callback
+      );
     }
   }
 
@@ -105,21 +91,5 @@ export class Slicer extends Worker {
     data = this._count === 1 ? data.pop() : data;
 
     return [box, data];
-  }
-
-  pickAndPass(box, data, callback, index) {
-    if (this._count > 1) {
-      this.pass(box, data, callback);
-      return;
-    }
-
-    if (((index % this._pick.total) + 1) === this._pick.index) {
-      this.pass(box, data, callback);
-      return;
-    }
-
-    if (this._bypass) {
-      this._bypass.handle(box, data, callback);
-    }
   }
 }

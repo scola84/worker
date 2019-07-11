@@ -259,8 +259,8 @@ export class Worker {
     }
   }
 
-  log(name, ...args) {
-    (this._log || log)(name, this, ...args);
+  log(type, ...args) {
+    (this._log || log)(type, this, ...args);
   }
 
   merge(box, data, ...extra) {
