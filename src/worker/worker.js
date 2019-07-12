@@ -10,6 +10,13 @@ export class Worker {
     log = value;
   }
 
+  static log(name, worker, box, error) {
+    if (name === 'fail' && error.logged !== true) {
+      error.logged = true;
+      console.error(new Date().toISOString(), error);
+    }
+  }
+
   constructor(options = {}) {
     this._description = null;
     this._id = null;
