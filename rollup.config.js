@@ -4,6 +4,14 @@ import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import resolve from 'rollup-plugin-node-resolve';
 
+const external = [
+  'node-cron'
+];
+
+const globals = {
+  'node-cron': 'nodeCron'
+};
+
 const input = './index.js';
 
 const plugins = [
@@ -16,18 +24,22 @@ const plugins = [
 
 export default [{
   input,
+  external,
   output: {
     extend: true,
     file: 'dist/worker.umd.js',
     format: 'umd',
+    globals,
     name: 'scola.worker'
   },
   plugins
 }, {
   input,
+  external,
   output: {
     file: 'dist/worker.cjs.js',
-    format: 'cjs'
+    format: 'cjs',
+    globals
   },
   plugins
 }];
