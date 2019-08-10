@@ -18,12 +18,11 @@ export class Worker {
   }
 
   constructor(options = {}) {
-    this._description = null;
     this._id = null;
 
     this._bypass = null;
-    this._parent = null;
-    this._worker = null;
+    this._downstream = null;
+    this._upstream = null;
 
     this._act = null;
     this._decide = null;
@@ -36,22 +35,20 @@ export class Worker {
     this.setAct(options.act);
     this.setBypass(options.bypass);
     this.setDecide(options.decide);
-    this.setDescription(options.description);
+    this.setDownstream(options.downstream);
     this.setErr(options.err);
     this.setFilter(options.filter);
     this.setId(options.id);
     this.setLog(options.log);
     this.setMerge(options.merge);
-    this.setParent(options.parent);
+    this.setUpstream(options.upstream);
     this.setWrap(options.wrap);
-    this.setWorker(options.worker);
   }
 
   getOptions() {
     return {
       act: this._act,
       decide: this._decide,
-      description: this._description,
       err: this._err,
       filter: this._filter,
       log: this._log,
@@ -87,12 +84,12 @@ export class Worker {
     return this;
   }
 
-  getDescription() {
-    return this._description;
+  getDownstream() {
+    return this._downstream;
   }
 
-  setDescription(value = null) {
-    this._description = value;
+  setDownstream(value = null) {
+    this._downstream = value;
     return this;
   }
 
@@ -141,12 +138,12 @@ export class Worker {
     return this;
   }
 
-  getParent() {
-    return this._parent;
+  getUpstream() {
+    return this._upstream;
   }
 
-  setParent(value = null) {
-    this._parent = value;
+  setUpstream(value = null) {
+    this._upstream = value;
     return this;
   }
 
@@ -159,24 +156,12 @@ export class Worker {
     return this;
   }
 
-  getWorker() {
-    return this._worker;
-  }
-
-  setWorker(value = null) {
-    this._worker = value;
-    return this;
-  }
-
   act(box, data, callback) {
-    data = this.filter(box, data);
-
     if (this._act) {
       this._act(box, data, callback);
       return;
     }
 
-    data = this.merge(box, data);
     this.pass(box, data, callback);
   }
 
@@ -199,7 +184,7 @@ export class Worker {
       return worker[1];
     }
 
-    this._worker = worker.setParent(this);
+    this._downstream = worker.setUpstream(this);
     return worker;
   }
 
@@ -226,8 +211,8 @@ export class Worker {
     try {
       if (this._bypass) {
         this._bypass.err(box, error, callback);
-      } else if (this._worker) {
-        this._worker.err(box, error, callback);
+      } else if (this._downstream) {
+        this._downstream.err(box, error, callback);
       }
     } catch (tryError) {
       console.error(tryError);
@@ -247,8 +232,8 @@ export class Worker {
       return this;
     }
 
-    if (this._worker) {
-      return this._worker.find(compare);
+    if (this._downstream) {
+      return this._downstream.find(compare);
     }
 
     return null;
@@ -282,8 +267,8 @@ export class Worker {
     this.log('pass', box, data);
 
     try {
-      if (this._worker) {
-        this._worker.handle(box, data, callback);
+      if (this._downstream) {
+        this._downstream.handle(box, data, callback);
       }
     } catch (tryError) {
       this.fail(box, tryError, callback);
@@ -291,7 +276,7 @@ export class Worker {
   }
 
   prepend(worker) {
-    return this._parent
+    return this._upstream
       .connect(worker)
       .connect(this);
   }
@@ -299,8 +284,8 @@ export class Worker {
   skip(box, data, callback) {
     this.log('skip', box, data);
 
-    if (this._worker) {
-      this._worker.handle(box, data, callback);
+    if (this._downstream) {
+      this._downstream.handle(box, data, callback);
     }
   }
 }

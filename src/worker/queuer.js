@@ -56,6 +56,7 @@ export class Queuer extends Worker {
       drain: this._drain,
       handler: this._handler,
       name: this._name,
+      queue: this._queue,
       queuer: this._queuer,
       saturated: this._saturated,
       unsaturated: this._unsaturated

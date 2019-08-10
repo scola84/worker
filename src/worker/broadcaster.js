@@ -4,11 +4,12 @@ export class Broadcaster extends Worker {
   constructor(options = {}) {
     super(options);
 
+    this._downstreams = null;
     this._name = null;
     this._sync = null;
     this._unify = null;
-    this._workers = [];
 
+    this.setDownstreams(options.downstreams);
     this.setName(options.name);
     this.setSync(options.sync);
     this.setUnify(options.unify);
@@ -20,6 +21,15 @@ export class Broadcaster extends Worker {
       sync: this._sync,
       unify: this._unify
     });
+  }
+
+  getDownstreams() {
+    return this._downstreams;
+  }
+
+  setDownstreams(value = []) {
+    this._downstreams = value;
+    return this;
   }
 
   getName() {
@@ -59,7 +69,7 @@ export class Broadcaster extends Worker {
       return worker[1];
     }
 
-    this._workers.push(worker);
+    this._downstreams.push(worker);
     return super.connect(worker);
   }
 
@@ -70,8 +80,8 @@ export class Broadcaster extends Worker {
       return found;
     }
 
-    for (let i = 0; i < this._workers.length; i += 1) {
-      found = this._workers[i].find(compare, up);
+    for (let i = 0; i < this._downstreams.length; i += 1) {
+      found = this.downstreams[i].find(compare, up);
 
       if (found) {
         return found;
@@ -90,7 +100,7 @@ export class Broadcaster extends Worker {
       const unify = {
         count: 0,
         empty: false,
-        total: this._workers.length
+        total: this._downstreams.length
       };
 
       box.unify = box.unify || {};
@@ -108,8 +118,8 @@ export class Broadcaster extends Worker {
   }
 
   passAsync(box, data, callback) {
-    for (let i = 0; i < this._workers.length; i += 1) {
-      this._workers[i].handle(box, data, callback);
+    for (let i = 0; i < this._downstreams.length; i += 1) {
+      this._downstreams[i].handle(box, data, callback);
     }
   }
 
@@ -120,6 +130,6 @@ export class Broadcaster extends Worker {
       callback :
       () => this.passSync(box, data, callback);
 
-    this._workers[unify.count].handle(box, data, cb);
+    this._downstreams[unify.count].handle(box, data, cb);
   }
 }

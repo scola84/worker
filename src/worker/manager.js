@@ -5,9 +5,10 @@ export class Manager extends Worker {
     super(options);
 
     this._names = null;
-    this._pool = {};
+    this._pool = null;
 
     this.setNames(options.names);
+    this.setPool(options.pool);
   }
 
   getOptions() {
@@ -22,6 +23,15 @@ export class Manager extends Worker {
 
   setNames(value = null) {
     this._names = value;
+    return this;
+  }
+
+  getPool() {
+    return this._pool;
+  }
+
+  setPool(value = {}) {
+    this._pool = value;
     return this;
   }
 

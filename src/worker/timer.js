@@ -5,18 +5,30 @@ export class Timer extends Worker {
   constructor(options = {}) {
     super(options);
 
+    this._immediate = null;
     this._interval = null;
     this._schedule = null;
 
+    this.setImmediate(options.immediate);
     this.setInterval(options.interval);
     this.setSchedule(options.schedule);
   }
 
   getOptions() {
     return Object.assign(super.getOptions(), {
+      immediate: this._immediate,
       interval: this._interval,
       schedule: this._schedule
     });
+  }
+
+  getImmediate() {
+    return this._immediate;
+  }
+
+  setImmediate(value = false) {
+    this._immediate = value;
+    return this;
   }
 
   getInterval() {
@@ -37,11 +49,7 @@ export class Timer extends Worker {
     return this;
   }
 
-  start(mode = 1) {
-    if ((mode & 1) === 0) {
-      return;
-    }
-
+  start() {
     if (this._schedule !== null) {
       this.executeSchedule();
     }
@@ -50,7 +58,7 @@ export class Timer extends Worker {
       this.executeInterval();
     }
 
-    if ((mode & 2) === 2) {
+    if (this._immediate) {
       this.execute({
         immediate: true
       });
@@ -58,8 +66,10 @@ export class Timer extends Worker {
   }
 
   execute(box) {
-    const data = this.filter(box);
-    this.handle(box, data);
+    this.handle(
+      box,
+      this.filter(box)
+    );
   }
 
   executeInterval() {

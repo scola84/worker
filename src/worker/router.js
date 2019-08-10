@@ -1,9 +1,20 @@
 import { Worker } from './worker';
 
 export class Router extends Worker {
-  constructor(options) {
+  constructor(options = {}) {
     super(options);
-    this._workers = {};
+
+    this._downstreams = null;
+    this.setDownstreams(options.downstreams);
+  }
+
+  getDownstreams() {
+    return this._downstreams;
+  }
+
+  setDownstreams(value = {}) {
+    this._downstreams = value;
+    return this;
   }
 
   act(box, data, callback) {
@@ -26,7 +37,7 @@ export class Router extends Worker {
       return worker[1];
     }
 
-    this._workers[name] = worker;
+    this._downstreams[name] = worker;
     return super.connect(worker);
   }
 
@@ -45,10 +56,10 @@ export class Router extends Worker {
       return found;
     }
 
-    const names = Object.keys(this._workers);
+    const names = Object.keys(this._downstreams);
 
     for (let i = 0; i < names.length; i += 1) {
-      found = this._workers[names[i]].find(compare, up);
+      found = this._downstreams[names[i]].find(compare, up);
 
       if (found) {
         return found;
@@ -61,8 +72,8 @@ export class Router extends Worker {
   pass(name, box, data, callback) {
     this.log('info', box, data, name);
 
-    if (this._workers[name]) {
-      this._workers[name].handle(box, data, callback);
+    if (this._downstreams[name]) {
+      this._downstreams[name].handle(box, data, callback);
     } else if (this._bypass) {
       this._bypass.handle(box, data, callback);
     }
