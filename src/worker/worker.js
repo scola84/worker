@@ -1,22 +1,6 @@
 let id = 0;
-let log = () => {};
 
 export class Worker {
-  static getLog() {
-    return log;
-  }
-
-  static setLog(value) {
-    log = value;
-  }
-
-  static log(name, worker, box, error) {
-    if (name === 'fail' && error.logged !== true) {
-      error.logged = true;
-      console.error(new Date().toISOString(), error);
-    }
-  }
-
   constructor(options = {}) {
     this._id = null;
 
@@ -252,7 +236,7 @@ export class Worker {
   }
 
   log(type, ...args) {
-    (this._log || log)(type, this, ...args);
+    (this._log || console.out || (() => {}))(type, this, ...args);
   }
 
   merge(box, data, ...extra) {
