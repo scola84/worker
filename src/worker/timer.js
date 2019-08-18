@@ -49,22 +49,6 @@ export class Timer extends Worker {
     return this;
   }
 
-  start() {
-    if (this._schedule !== null) {
-      this.executeSchedule();
-    }
-
-    if (this._interval !== null) {
-      this.executeInterval();
-    }
-
-    if (this._immediate) {
-      this.execute({
-        immediate: true
-      });
-    }
-  }
-
   execute(box) {
     this.handle(
       box,
@@ -118,5 +102,21 @@ export class Timer extends Worker {
         schedule: name
       });
     });
+  }
+
+  start() {
+    if (this._schedule !== null) {
+      this.executeSchedule();
+    }
+
+    if (this._interval !== null) {
+      this.executeInterval();
+    }
+
+    if (this._immediate) {
+      this.execute({
+        immediate: true
+      });
+    }
   }
 }
