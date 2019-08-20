@@ -19,7 +19,11 @@ const plugins = [
   commonjs(),
   builtins(),
   json(),
-  buble()
+  buble({
+    transforms: {
+      dangerousForOf: true
+    }
+  })
 ];
 
 export default [{
