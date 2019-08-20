@@ -5,10 +5,12 @@ import json from 'rollup-plugin-json';
 import resolve from 'rollup-plugin-node-resolve';
 
 const external = [
+  'fs-extra',
   'node-cron'
 ];
 
 const globals = {
+  'fs-extra': 'fsExtra',
   'node-cron': 'nodeCron'
 };
 

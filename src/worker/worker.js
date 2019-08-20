@@ -2,18 +2,16 @@ let id = 0;
 
 export class Worker {
   constructor(options = {}) {
-    this._id = null;
-
-    this._bypass = null;
-    this._downstream = null;
-    this._upstream = null;
-
     this._act = null;
+    this._bypass = null;
     this._decide = null;
+    this._downstream = null;
     this._err = null;
     this._filter = null;
+    this._id = null;
     this._log = null;
     this._merge = null;
+    this._upstream = null;
     this._wrap = null;
 
     this.setAct(options.act);
