@@ -27,8 +27,10 @@ export class Queuer extends Worker {
     this._drain = null;
     this._handler = null;
     this._name = null;
+    this._pub = null;
     this._queue = null;
     this._queuer = null;
+    this._sub = null;
     this._saturated = null;
     this._unsaturated = null;
 
@@ -56,9 +58,11 @@ export class Queuer extends Worker {
       drain: this._drain,
       handler: this._handler,
       name: this._name,
+      pub: this._pub,
       queue: this._queue,
       queuer: this._queuer,
       saturated: this._saturated,
+      sub: this._sub,
       unsaturated: this._unsaturated
     });
   }
@@ -99,6 +103,15 @@ export class Queuer extends Worker {
     return this;
   }
 
+  getPub() {
+    return this._pub;
+  }
+
+  setPub(value = null) {
+    this._pub = value;
+    return this;
+  }
+
   getQueue() {
     return this._queue;
   }
@@ -123,6 +136,15 @@ export class Queuer extends Worker {
 
   setSaturated(value = () => {}) {
     this._saturated = value;
+    return this;
+  }
+
+  getSub() {
+    return this._sub;
+  }
+
+  setSub(value = null) {
+    this._sub = value;
     return this;
   }
 
@@ -239,24 +261,28 @@ export class Queuer extends Worker {
   }
 
   startHandler() {
-    this._sub = this._handler.duplicate();
+    const sub = this._handler.duplicate();
 
-    this._sub.on('error', (error) => {
+    sub.on('error', (error) => {
       this.log('fail', null, error);
     });
 
-    this._sub.on('message', () => {
+    sub.on('message', () => {
       this.pushFromRemote();
     });
 
-    this._sub.subscribe(this._name);
+    sub.subscribe(this._name);
+
+    this.setSub(sub);
   }
 
   startQueuer() {
-    this._pub = this._queuer.duplicate();
+    const pub = this._queuer.duplicate();
 
-    this._pub.on('error', (error) => {
+    pub.on('error', (error) => {
       this.log('fail', null, error);
     });
+
+    this.setPub(pub);
   }
 }
