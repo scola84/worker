@@ -94,6 +94,6 @@ export class Unifier extends Worker {
   }
 
   err(box, error, callback) {
-    this.act(box, error, callback);
+    this.handle(box, error, callback);
   }
 }
