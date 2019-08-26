@@ -1,1 +1,1 @@
-export * from './vsprintf';
+export * from './vsprintf'

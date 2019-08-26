@@ -1,33 +1,33 @@
-let id = 0;
+let id = 0
 
 export class Worker {
-  constructor(options = {}) {
-    this._act = null;
-    this._bypass = null;
-    this._decide = null;
-    this._downstream = null;
-    this._err = null;
-    this._filter = null;
-    this._id = null;
-    this._log = null;
-    this._merge = null;
-    this._upstream = null;
-    this._wrap = null;
+  constructor (options = {}) {
+    this._act = null
+    this._bypass = null
+    this._decide = null
+    this._downstream = null
+    this._err = null
+    this._filter = null
+    this._id = null
+    this._log = null
+    this._merge = null
+    this._upstream = null
+    this._wrap = null
 
-    this.setAct(options.act);
-    this.setBypass(options.bypass);
-    this.setDecide(options.decide);
-    this.setDownstream(options.downstream);
-    this.setErr(options.err);
-    this.setFilter(options.filter);
-    this.setId(options.id);
-    this.setLog(options.log);
-    this.setMerge(options.merge);
-    this.setUpstream(options.upstream);
-    this.setWrap(options.wrap);
+    this.setAct(options.act)
+    this.setBypass(options.bypass)
+    this.setDecide(options.decide)
+    this.setDownstream(options.downstream)
+    this.setErr(options.err)
+    this.setFilter(options.filter)
+    this.setId(options.id)
+    this.setLog(options.log)
+    this.setMerge(options.merge)
+    this.setUpstream(options.upstream)
+    this.setWrap(options.wrap)
   }
 
-  getOptions() {
+  getOptions () {
     return {
       act: this._act,
       decide: this._decide,
@@ -36,238 +36,238 @@ export class Worker {
       log: this._log,
       merge: this._merge,
       wrap: this._wrap
-    };
+    }
   }
 
-  getAct() {
-    return this._act;
+  getAct () {
+    return this._act
   }
 
-  setAct(value = null) {
-    this._act = value;
-    return this;
+  setAct (value = null) {
+    this._act = value
+    return this
   }
 
-  getBypass() {
-    return this._bypass;
+  getBypass () {
+    return this._bypass
   }
 
-  setBypass(value = null) {
-    this._bypass = value;
-    return this;
+  setBypass (value = null) {
+    this._bypass = value
+    return this
   }
 
-  getDecide() {
-    return this._decide;
+  getDecide () {
+    return this._decide
   }
 
-  setDecide(value = null) {
-    this._decide = value;
-    return this;
+  setDecide (value = null) {
+    this._decide = value
+    return this
   }
 
-  getDownstream() {
-    return this._downstream;
+  getDownstream () {
+    return this._downstream
   }
 
-  setDownstream(value = null) {
-    this._downstream = value;
-    return this;
+  setDownstream (value = null) {
+    this._downstream = value
+    return this
   }
 
-  getErr() {
-    return this._err;
+  getErr () {
+    return this._err
   }
 
-  setErr(value = null) {
-    this._err = value;
-    return this;
+  setErr (value = null) {
+    this._err = value
+    return this
   }
 
-  getFilter() {
-    return this._filter;
+  getFilter () {
+    return this._filter
   }
 
-  setFilter(value = null) {
-    this._filter = value;
-    return this;
+  setFilter (value = null) {
+    this._filter = value
+    return this
   }
 
-  getId() {
-    return this._id;
+  getId () {
+    return this._id
   }
 
-  setId(value = ++id) {
-    this._id = value;
-    return this;
+  setId (value = ++id) {
+    this._id = value
+    return this
   }
 
-  getLog() {
-    return this._log;
+  getLog () {
+    return this._log
   }
 
-  setLog(value = null) {
-    this._log = value;
-    return this;
+  setLog (value = null) {
+    this._log = value
+    return this
   }
 
-  getMerge() {
-    return this._merge;
+  getMerge () {
+    return this._merge
   }
 
-  setMerge(value = null) {
-    this._merge = value;
-    return this;
+  setMerge (value = null) {
+    this._merge = value
+    return this
   }
 
-  getUpstream() {
-    return this._upstream;
+  getUpstream () {
+    return this._upstream
   }
 
-  setUpstream(value = null) {
-    this._upstream = value;
-    return this;
+  setUpstream (value = null) {
+    this._upstream = value
+    return this
   }
 
-  getWrap() {
-    return this._wrap;
+  getWrap () {
+    return this._wrap
   }
 
-  setWrap(value = false) {
-    this._wrap = value;
-    return this;
+  setWrap (value = false) {
+    this._wrap = value
+    return this
   }
 
-  act(box, data, callback) {
+  act (box, data, callback) {
     if (this._act) {
-      this._act(box, data, callback);
-      return;
+      this._act(box, data, callback)
+      return
     }
 
-    this.pass(box, data, callback);
+    this.pass(box, data, callback)
   }
 
-  bypass(worker = null) {
+  bypass (worker = null) {
     if (worker === null) {
-      return this;
+      return this
     }
 
-    this._bypass = worker;
-    return this;
+    this._bypass = worker
+    return this
   }
 
-  connect(worker = null) {
+  connect (worker = null) {
     if (worker === null) {
-      return this;
+      return this
     }
 
     if (Array.isArray(worker)) {
-      this.connect(worker[0]);
-      return worker[1];
+      this.connect(worker[0])
+      return worker[1]
     }
 
-    this._downstream = worker.setUpstream(this);
-    return worker;
+    this._downstream = worker.setUpstream(this)
+    return worker
   }
 
-  decide(box, data, callback) {
+  decide (box, data, callback) {
     if (this._decide) {
-      return this._decide(box, data, callback);
+      return this._decide(box, data, callback)
     }
 
-    return true;
+    return true
   }
 
-  err(box, error, callback) {
+  err (box, error, callback) {
     if (this._err) {
-      this._err(box, error, callback);
-      return;
+      this._err(box, error, callback)
+      return
     }
 
-    this.fail(box, error, callback);
+    this.fail(box, error, callback)
   }
 
-  fail(box, error, callback) {
-    this.log('fail', box, error);
+  fail (box, error, callback) {
+    this.log('fail', box, error)
 
     try {
       if (this._bypass) {
-        this._bypass.err(box, error, callback);
+        this._bypass.err(box, error, callback)
       } else if (this._downstream) {
-        this._downstream.err(box, error, callback);
+        this._downstream.err(box, error, callback)
       }
     } catch (tryError) {
-      console.error(tryError);
+      console.error(tryError)
     }
   }
 
-  filter(box, data, ...extra) {
+  filter (box, data, ...extra) {
     if (this._filter) {
-      return this._filter(box, data, ...extra);
+      return this._filter(box, data, ...extra)
     }
 
-    return data;
+    return data
   }
 
-  find(compare) {
+  find (compare) {
     if (compare(this) === true) {
-      return this;
+      return this
     }
 
     if (this._downstream) {
-      return this._downstream.find(compare);
+      return this._downstream.find(compare)
     }
 
-    return null;
+    return null
   }
 
-  handle(box, data, callback) {
-    const decision = this.decide(box, data, callback);
+  handle (box, data, callback) {
+    const decision = this.decide(box, data, callback)
 
     if (decision === true) {
-      this.act(box, data, callback);
+      this.act(box, data, callback)
     } else if (decision === false) {
-      this.skip(box, data, callback);
+      this.skip(box, data, callback)
     } else if (this._bypass) {
-      this._bypass.handle(box, data, callback);
+      this._bypass.handle(box, data, callback)
     }
   }
 
-  log(type, ...args) {
-    (this._log || console.out || (() => {}))(type, this, ...args);
+  log (type, ...args) {
+    (this._log || console.out || (() => {}))(type, this, ...args)
   }
 
-  merge(box, data, ...extra) {
+  merge (box, data, ...extra) {
     if (this._merge) {
-      return this._merge(box, data, ...extra);
+      return this._merge(box, data, ...extra)
     }
 
-    return data;
+    return data
   }
 
-  pass(box, data, callback) {
-    this.log('pass', box, data);
+  pass (box, data, callback) {
+    this.log('pass', box, data)
 
     try {
       if (this._downstream) {
-        this._downstream.handle(box, data, callback);
+        this._downstream.handle(box, data, callback)
       }
     } catch (tryError) {
-      this.fail(box, tryError, callback);
+      this.fail(box, tryError, callback)
     }
   }
 
-  prepend(worker) {
+  prepend (worker) {
     return this._upstream
       .connect(worker)
-      .connect(this);
+      .connect(this)
   }
 
-  skip(box, data, callback) {
-    this.log('skip', box, data);
+  skip (box, data, callback) {
+    this.log('skip', box, data)
 
     if (this._downstream) {
-      this._downstream.handle(box, data, callback);
+      this._downstream.handle(box, data, callback)
     }
   }
 }

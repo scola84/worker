@@ -1,58 +1,58 @@
-import createQueue from 'async/queue';
-import { Worker } from './worker';
+import createQueue from 'async/queue'
+import { Worker } from './worker'
 
-const queues = {};
+const queues = {}
 
 export class Queuer extends Worker {
-  static createQueue(concurrency, name = null) {
+  static createQueue (concurrency, name = null) {
     if (queues[name]) {
-      return queues[name];
+      return queues[name]
     }
 
     const queue = createQueue((fn, callback) => {
-      fn(callback);
-    }, concurrency);
+      fn(callback)
+    }, concurrency)
 
     if (name !== null) {
-      queues[name] = queue;
+      queues[name] = queue
     }
 
-    return queue;
+    return queue
   }
 
-  constructor(options = {}) {
-    super(options);
+  constructor (options = {}) {
+    super(options)
 
-    this._concurrency = null;
-    this._drain = null;
-    this._handler = null;
-    this._name = null;
-    this._pub = null;
-    this._queue = null;
-    this._queuer = null;
-    this._sub = null;
-    this._saturated = null;
-    this._unsaturated = null;
+    this._concurrency = null
+    this._drain = null
+    this._handler = null
+    this._name = null
+    this._pub = null
+    this._queue = null
+    this._queuer = null
+    this._sub = null
+    this._saturated = null
+    this._unsaturated = null
 
-    this.setConcurrency(options.concurrency);
-    this.setDrain(options.drain);
-    this.setName(options.name);
-    this.setQueue(options.queue);
-    this.setSaturated(options.saturated);
-    this.setUnsaturated(options.unsaturated);
+    this.setConcurrency(options.concurrency)
+    this.setDrain(options.drain)
+    this.setName(options.name)
+    this.setQueue(options.queue)
+    this.setSaturated(options.saturated)
+    this.setUnsaturated(options.unsaturated)
 
     if (options.handler) {
-      this.setHandler(options.handler);
-      this.startHandler();
+      this.setHandler(options.handler)
+      this.startHandler()
     }
 
     if (options.queuer) {
-      this.setQueuer(options.queuer);
-      this.startQueuer();
+      this.setQueuer(options.queuer)
+      this.startQueuer()
     }
   }
 
-  getOptions() {
+  getOptions () {
     return Object.assign(super.getOptions(), {
       concurrency: this._concurrency,
       drain: this._drain,
@@ -64,225 +64,225 @@ export class Queuer extends Worker {
       saturated: this._saturated,
       sub: this._sub,
       unsaturated: this._unsaturated
-    });
+    })
   }
 
-  getConcurrency() {
-    return this._concurrency;
+  getConcurrency () {
+    return this._concurrency
   }
 
-  setConcurrency(value = 1) {
-    this._concurrency = value;
-    return this;
+  setConcurrency (value = 1) {
+    this._concurrency = value
+    return this
   }
 
-  getDrain() {
-    return this._drain;
+  getDrain () {
+    return this._drain
   }
 
-  setDrain(value = () => {}) {
-    this._drain = value;
-    return this;
+  setDrain (value = () => {}) {
+    this._drain = value
+    return this
   }
 
-  getHandler() {
-    return this._handler;
+  getHandler () {
+    return this._handler
   }
 
-  setHandler(value = null) {
-    this._handler = value;
-    return this;
+  setHandler (value = null) {
+    this._handler = value
+    return this
   }
 
-  getName() {
-    return this._name;
+  getName () {
+    return this._name
   }
 
-  setName(value = null) {
-    this._name = value;
-    return this;
+  setName (value = null) {
+    this._name = value
+    return this
   }
 
-  getPub() {
-    return this._pub;
+  getPub () {
+    return this._pub
   }
 
-  setPub(value = null) {
-    this._pub = value;
-    return this;
+  setPub (value = null) {
+    this._pub = value
+    return this
   }
 
-  getQueue() {
-    return this._queue;
+  getQueue () {
+    return this._queue
   }
 
-  setQueue(value = null) {
-    this._queue = value;
-    return this;
+  setQueue (value = null) {
+    this._queue = value
+    return this
   }
 
-  getQueuer() {
-    return this._queuer;
+  getQueuer () {
+    return this._queuer
   }
 
-  setQueuer(value = null) {
-    this._queuer = value;
-    return this;
+  setQueuer (value = null) {
+    this._queuer = value
+    return this
   }
 
-  getSaturated() {
-    return this._saturated;
+  getSaturated () {
+    return this._saturated
   }
 
-  setSaturated(value = () => {}) {
-    this._saturated = value;
-    return this;
+  setSaturated (value = () => {}) {
+    this._saturated = value
+    return this
   }
 
-  getSub() {
-    return this._sub;
+  getSub () {
+    return this._sub
   }
 
-  setSub(value = null) {
-    this._sub = value;
-    return this;
+  setSub (value = null) {
+    this._sub = value
+    return this
   }
 
-  getUnsaturated() {
-    return this._unsaturated;
+  getUnsaturated () {
+    return this._unsaturated
   }
 
-  setUnsaturated(value = () => {}) {
-    this._unsaturated = value;
-    return this;
+  setUnsaturated (value = () => {}) {
+    this._unsaturated = value
+    return this
   }
 
-  act(box, data) {
+  act (box, data) {
     if (this._queuer !== null) {
-      this.pushToRemote(box, data);
+      this.pushToRemote(box, data)
     } else if (this._handler === null) {
-      this.pushToLocal(box, data);
+      this.pushToLocal(box, data)
     }
   }
 
-  createQueue(box) {
+  createQueue (box) {
     this._queue = Queuer.createQueue(
       this._concurrency,
       this._name
-    );
+    )
 
     this._queue.saturated = () => {
-      this._saturated(box);
-    };
+      this._saturated(box)
+    }
 
     this._queue.unsaturated = () => {
-      this._unsaturated(box);
-    };
+      this._unsaturated(box)
+    }
 
     this._queue.drain = () => {
-      this._drain(box);
-    };
+      this._drain(box)
+    }
   }
 
-  handleRemote(callback) {
+  handleRemote (callback) {
     this._handler.rpop(this._name, (error, data) => {
       if (error) {
-        callback();
-        this.log('fail', null, error);
-        return;
+        callback()
+        this.log('fail', null, error)
+        return
       }
 
       if (data === null) {
-        callback();
-        this._queue.unsaturated = () => {};
-        return;
+        callback()
+        this._queue.unsaturated = () => {}
+        return
       }
 
       try {
-        data = JSON.parse(data);
+        data = JSON.parse(data)
       } catch (jsonError) {
-        callback();
-        this.log('fail', null, jsonError);
-        return;
+        callback()
+        this.log('fail', null, jsonError)
+        return
       }
 
-      this.pass({}, data, callback);
-    });
+      this.pass({}, data, callback)
+    })
   }
 
-  pushFromRemote() {
+  pushFromRemote () {
     if (this._queue === null) {
-      this.createQueue();
+      this.createQueue()
     }
 
     if (this._queue.length() === this._concurrency) {
-      return;
+      return
     }
 
     this._queue.unsaturated = () => {
-      this.pushFromRemote();
-    };
+      this.pushFromRemote()
+    }
 
     this._queue.push((callback) => {
-      this.handleRemote(callback);
-    });
+      this.handleRemote(callback)
+    })
   }
 
-  pushToLocal(box, data) {
+  pushToLocal (box, data) {
     if (this._queue === null) {
-      this.createQueue(box);
+      this.createQueue(box)
     }
 
     if (this._queue.length() === this._concurrency) {
-      this._queue.saturated();
+      this._queue.saturated()
     }
 
     this._queue.push((callback) => {
-      this.pass(box, data, callback);
-    });
+      this.pass(box, data, callback)
+    })
   }
 
-  pushToRemote(box, data) {
+  pushToRemote (box, data) {
     try {
-      data = JSON.stringify(data);
+      data = JSON.stringify(data)
     } catch (error) {
-      this.log('fail', box, error);
-      return;
+      this.log('fail', box, error)
+      return
     }
 
     this._queuer.lpush(this._name, data, (error) => {
       if (error) {
-        this.log('fail', box, error);
-        return;
+        this.log('fail', box, error)
+        return
       }
 
-      this._pub.publish(this._name, 1);
-    });
+      this._pub.publish(this._name, 1)
+    })
   }
 
-  startHandler() {
-    const sub = this._handler.duplicate();
+  startHandler () {
+    const sub = this._handler.duplicate()
 
     sub.on('error', (error) => {
-      this.log('fail', null, error);
-    });
+      this.log('fail', null, error)
+    })
 
     sub.on('message', () => {
-      this.pushFromRemote();
-    });
+      this.pushFromRemote()
+    })
 
-    sub.subscribe(this._name);
+    sub.subscribe(this._name)
 
-    this.setSub(sub);
+    this.setSub(sub)
   }
 
-  startQueuer() {
-    const pub = this._queuer.duplicate();
+  startQueuer () {
+    const pub = this._queuer.duplicate()
 
     pub.on('error', (error) => {
-      this.log('fail', null, error);
-    });
+      this.log('fail', null, error)
+    })
 
-    this.setPub(pub);
+    this.setPub(pub)
   }
 }

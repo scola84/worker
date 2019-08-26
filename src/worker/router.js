@@ -1,81 +1,81 @@
-import { Worker } from './worker';
+import { Worker } from './worker'
 
 export class Router extends Worker {
-  constructor(options = {}) {
-    super(options);
+  constructor (options = {}) {
+    super(options)
 
-    this._downstreams = null;
-    this.setDownstreams(options.downstreams);
+    this._downstreams = null
+    this.setDownstreams(options.downstreams)
   }
 
-  getDownstreams() {
-    return this._downstreams;
+  getDownstreams () {
+    return this._downstreams
   }
 
-  setDownstreams(value = {}) {
-    this._downstreams = value;
-    return this;
+  setDownstreams (value = {}) {
+    this._downstreams = value
+    return this
   }
 
-  act(box, data, callback) {
+  act (box, data, callback) {
     if (this._act) {
-      this._act(box, data, callback);
-      return;
+      this._act(box, data, callback)
+      return
     }
 
-    const name = this.filter(box, data);
-    this.pass(name, box, data, callback);
+    const name = this.filter(box, data)
+    this.pass(name, box, data, callback)
   }
 
-  connect(name, worker = null) {
+  connect (name, worker = null) {
     if (worker === null) {
-      return this;
+      return this
     }
 
     if (Array.isArray(worker)) {
-      this.connect(name, worker[0]);
-      return worker[1];
+      this.connect(name, worker[0])
+      return worker[1]
     }
 
-    this._downstreams[name] = worker;
-    return super.connect(worker);
+    this._downstreams[name] = worker
+    return super.connect(worker)
   }
 
-  filter(box, data, context) {
+  filter (box, data, context) {
     if (this._filter) {
-      return this._filter(box, data, context);
+      return this._filter(box, data, context)
     }
 
-    return box.name;
+    return box.name
   }
 
-  find(compare, up = false) {
-    let found = super.find(compare, up);
+  find (compare, up = false) {
+    let found = super.find(compare, up)
 
     if (found !== null) {
-      return found;
+      return found
     }
 
-    const names = Object.keys(this._downstreams);
+    const names = Object.keys(this._downstreams)
 
     for (let i = 0; i < names.length; i += 1) {
-      found = this._downstreams[names[i]].find(compare, up);
+      found = this._downstreams[names[i]].find(compare, up)
 
       if (found) {
-        return found;
+        return found
       }
     }
 
-    return found;
+    return found
   }
 
-  pass(name, box, data, callback) {
-    this.log('info', box, data, name);
+  pass (name, box, data, callback) {
+    this.log('info', box, data, name)
 
     if (this._downstreams[name]) {
-      this._downstreams[name].handle(box, data, callback);
+      this._downstreams[name].handle(box, data, callback)
     } else if (this._bypass) {
-      this._bypass.handle(box, data, callback);
+      this._bypass.handle(box, data, callback)
     }
   }
 }
