@@ -7,7 +7,7 @@
   "name": "@scola/worker",
   "repository": "github:scola84/worker",
   "unpkg": "./dist/worker.umd.js",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "files": [
     "dist/"
   ],
