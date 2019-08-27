@@ -27,5 +27,9 @@ export const plugins = [
       ['@babel/preset-env']
     ]
   }),
-  (args.w && {}) || uglify()
+  (args.w && {}) || uglify({
+    output: {
+      comments: /@license/
+    }
+  })
 ]

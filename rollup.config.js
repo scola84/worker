@@ -1,6 +1,8 @@
+import { banner } from './src/helper/rollup/banner'
 import { external } from './src/helper/rollup/external'
 import { globals } from './src/helper/rollup/globals'
 import { plugins } from './src/helper/rollup/plugins'
+import { name, version } from './package.json'
 
 external.splice(0, 0, ...[
   'fs-extra',
@@ -18,6 +20,7 @@ export default [{
   input,
   external,
   output: {
+    banner: banner(name, version),
     extend: true,
     file: 'dist/worker.umd.js',
     format: 'umd',
@@ -29,6 +32,7 @@ export default [{
   input,
   external,
   output: {
+    banner: banner(name, version),
     file: 'dist/worker.cjs.js',
     format: 'cjs',
     globals

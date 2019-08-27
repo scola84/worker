@@ -1,12 +1,20 @@
 {
-  "name": "@scola/worker",
-  "version": "3.0.0",
-  "description": "Code smarter with workers!",
-  "repository": "github:scola84/worker",
   "author": "M.C. van den Boogaart <scola@kvdb.name>",
+  "description": "Code smarter with workers!",
   "license": "MIT",
   "main": "./dist/worker.cjs.js",
   "module": "./index.js",
+  "name": "@scola/worker",
+  "repository": "github:scola84/worker",
+  "unpkg": "./dist/worker.umd.js",
+  "version": "2.15.0",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "prepublishOnly": "npm run format && rm -rf dist/ && rollup -c",
+    "format": "glob-run js-beautify -r 'src/**/*.{css,js}' && npx standard --fix"
+  },
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-transform-runtime": "^7.5.5",
@@ -23,10 +31,6 @@
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-uglify": "^6.0.2",
     "standard": "^14.0.2"
-  },
-  "scripts": {
-    "build": "rollup -cm",
-    "format": "glob-run js-beautify -r 'src/**/*.{css,js}' && npx standard --fix"
   },
   "dependencies": {
     "async": "^3.1.0",
