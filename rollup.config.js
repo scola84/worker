@@ -1,37 +1,18 @@
-import babel from 'rollup-plugin-babel'
-import builtins from 'rollup-plugin-node-builtins'
-import commonjs from 'rollup-plugin-commonjs'
-import json from 'rollup-plugin-json'
-import resolve from 'rollup-plugin-node-resolve'
+import { external } from './src/helper/rollup/external'
+import { globals } from './src/helper/rollup/globals'
+import { plugins } from './src/helper/rollup/plugins'
 
-const external = [
+external.splice(0, 0, ...[
   'fs-extra',
   'node-cron'
-]
+])
 
-const globals = {
+Object.assign(globals, {
   'fs-extra': 'fsExtra',
   'node-cron': 'nodeCron'
-}
+})
 
 const input = './index.js'
-
-const plugins = [
-  resolve(),
-  commonjs(),
-  builtins(),
-  json(),
-  babel({
-    plugins: [
-      ['@babel/plugin-transform-runtime', {
-        helpers: false
-      }]
-    ],
-    presets: [
-      ['@babel/preset-env']
-    ]
-  })
-]
 
 export default [{
   input,
