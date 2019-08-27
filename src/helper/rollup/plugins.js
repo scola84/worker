@@ -14,6 +14,7 @@ export const plugins = [
   commonjs(),
   builtins(),
   css({
+    extract: true,
     minimize: true
   }),
   json(),
