@@ -19,8 +19,8 @@
     "@scola/cli": "^1.2.0",
     "glob-run": "^0.1.7",
     "js-beautify": "^1.10.2",
-    "rollup": "^1.20.2",
-    "standard": "^14.0.2"
+    "rollup": "^1.20.3",
+    "standard": "^14.1.0"
   },
   "dependencies": {
     "async": "^3.1.0",
