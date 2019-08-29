@@ -1,14 +1,14 @@
 import {
+  name,
+  version
+} from './package.json'
+
+const {
   banner,
   external,
   globals,
   plugins
-} from '@scola/cli/rollup'
-
-import {
-  name,
-  version
-} from './package.json'
+} = require('./rollup')
 
 external.splice(0, 0, ...[
   'fs-extra',
