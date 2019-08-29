@@ -1,8 +1,14 @@
-import { banner } from './src/helper/rollup/banner'
-import { external } from './src/helper/rollup/external'
-import { globals } from './src/helper/rollup/globals'
-import { plugins } from './src/helper/rollup/plugins'
-import { name, version } from './package.json'
+import {
+  banner,
+  external,
+  globals,
+  plugins
+} from '@scola/cli/rollup'
+
+import {
+  name,
+  version
+} from './package.json'
 
 external.splice(0, 0, ...[
   'fs-extra',
