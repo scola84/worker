@@ -1,0 +1,10 @@
+@license <%= pkg.name %>@<%= pkg.version %>
+
+Copyright (c) <%= pkg.author %>
+
+This source code is licensed under the MIT license found in the
+LICENSE file in the root directory of this source tree.
+
+This source code includes code which is licensed under the licenses
+which can be found in LICENSE-THIRDPARTY file in the root directory
+of this source tree.
