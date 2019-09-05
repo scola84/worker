@@ -1,13 +1,16 @@
-const builtins = require('rollup-plugin-node-builtins')
+const { readFileSync } = require('fs')
+const { template } = require('lodash')
+const minimist = require('minimist')
+const babel = require('rollup-plugin-babel')
 const commonjs = require('rollup-plugin-commonjs')
-const css = require('rollup-plugin-postcss')
 const json = require('rollup-plugin-json')
 const license = require('rollup-plugin-license')
-const minimist = require('minimist')
+const builtins = require('rollup-plugin-node-builtins')
 const resolve = require('rollup-plugin-node-resolve')
+const css = require('rollup-plugin-postcss')
 const { uglify } = require('rollup-plugin-uglify')
-const babel = require('rollup-plugin-babel')
 
+const pkg = require([process.cwd(), 'package.json'].join('/'))
 const { w: watch } = minimist(process.argv)
 
 module.exports = [
@@ -34,16 +37,18 @@ module.exports = [
   (watch && {}) || license({
     banner: {
       content: {
-        file: [__dirname, 'BANNER'].join('/')
+        file: [__dirname, 'tpl', 'BANNER'].join('/')
       }
     },
     thirdParty: {
       output: {
-        file: './LICENSE-THIRDPARTY',
-        template: (deps) => {
-          return deps.map(({ name, version, license, licenseText }) => {
-            return `# ${name}@${version}\n\n${(licenseText || license).trim()}`
-          }).join('\n\n')
+        file: './LICENSE',
+        template: (dependencies) => {
+          return template(
+            readFileSync(
+              [__dirname, 'tpl', 'LICENSE'].join('/')
+            )
+          )({ dependencies, pkg })
         }
       }
     }

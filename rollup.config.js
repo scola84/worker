@@ -1,18 +1,14 @@
-const {
-  external,
-  globals,
-  plugins
-} = require('./rollup')
+const plugins = require('./rollup.plugins')
 
-external.splice(0, 0, ...[
+const external = [
   'fs-extra',
   'node-cron'
-])
+]
 
-Object.assign(globals, {
+const globals = {
   'fs-extra': 'fsExtra',
   'node-cron': 'nodeCron'
-})
+}
 
 const input = './index.js'
 
