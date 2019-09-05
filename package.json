@@ -26,7 +26,6 @@
     "js-beautify": "^1.10.2",
     "rimraf": "^3.0.0",
     "rollup": "^1.20.3",
-    "rollup-plugin-license": "^0.12.1",
     "standard": "^14.1.0"
   },
   "peerDependencies": {
@@ -38,6 +37,7 @@
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-license": "^0.12.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-postcss": "^2.0.3",
@@ -52,6 +52,7 @@
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-license": "^0.12.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-postcss": "^2.0.3",
