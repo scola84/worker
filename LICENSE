@@ -1,4 +1,4 @@
-# @scola/worker@3.4.2
+# License of this package
 
 MIT License
 
@@ -22,11 +22,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-# luxon@1.17.2 
+# Licenses of its dependencies
+
+## luxon@1.17.2 
 
 MIT
 
-# marked@0.7.0 
+## marked@0.7.0 
 
 # License information
 
@@ -72,7 +74,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 This software is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the copyright owner or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
 
-# d3-format@1.4.1 
+## d3-format@1.4.1 
 
 Copyright 2010-2015 Mike Bostock
 All rights reserved.
@@ -102,7 +104,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# regenerator-runtime@0.13.3 
+## regenerator-runtime@0.13.3 
 
 MIT License
 
@@ -126,7 +128,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-# @babel/runtime@7.5.5 
+## @babel/runtime@7.5.5 
 
 MIT License
 
@@ -151,7 +153,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# async@3.1.0 
+## async@3.1.0 
 
 Copyright (c) 2010-2018 Caolan McMahon
 
