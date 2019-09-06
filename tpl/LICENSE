@@ -24,7 +24,7 @@ SOFTWARE.
 
 # Licenses of its dependencies
 <% _.forEach(dependencies, function (dependency) { %>
-## <%= dependency.name %>@<%= dependency.version%> 
+## <%= dependency.name %>@<%= dependency.version%>
 
 <%= (dependency.licenseText || dependency.license).trim() %>
 <% }) %>
