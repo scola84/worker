@@ -1,3 +1,7 @@
+## 3.5.0 (Tue Sep 10 2019)
+
+* rollup.plugin: implement changelog
+
 ## 3.4.6
 
 * Fix license
