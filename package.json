@@ -18,7 +18,7 @@
     "build:prod": "npm run clean && rollup -c",
     "clean": "rimraf dist/ node_modules/ package-lock.json && npm install",
     "format": "glob-run js-beautify -r 'src/**/*.{css,js}' && npx standard --fix",
-    "git:pkg": "git add LICENSE package-lock.json package.json",
+    "git:pkg": "git add CHANGELOG.md LICENSE.md package-lock.json package.json",
     "git:src": "git add src/",
     "preversion": "npm run format && npm run git:src",
     "version": "npm run build:prod && npm run git:pkg"
@@ -27,14 +27,14 @@
     "glob-run": "^0.1.7",
     "js-beautify": "^1.10.2",
     "rimraf": "^3.0.0",
-    "rollup": "^1.20.3",
+    "rollup": "^1.21.2",
     "standard": "^14.1.0"
   },
   "peerDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/runtime": "^7.5.5",
+    "@babel/core": "^7.6.0",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/runtime": "^7.6.0",
     "lodash": "^4.17.15",
     "minimist": "^1.2.0",
     "rollup-plugin-babel": "^4.3.3",
@@ -47,10 +47,10 @@
     "rollup-plugin-uglify": "^6.0.3"
   },
   "dependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/runtime": "^7.5.5",
+    "@babel/core": "^7.6.0",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/runtime": "^7.6.0",
     "lodash": "^4.17.15",
     "minimist": "^1.2.0",
     "rollup-plugin-babel": "^4.3.3",
