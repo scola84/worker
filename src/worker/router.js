@@ -17,14 +17,14 @@ export class Router extends Worker {
     return this
   }
 
-  act (box, data, callback) {
+  act (box, data) {
     if (this._act) {
-      this._act(box, data, callback)
+      this._act(box, data)
       return
     }
 
     const name = this.filter(box, data)
-    this.pass(name, box, data, callback)
+    this.pass(name, box, data)
   }
 
   connect (name, worker = null) {
@@ -69,13 +69,11 @@ export class Router extends Worker {
     return found
   }
 
-  pass (name, box, data, callback) {
-    this.log('info', box, data, name)
-
+  pass (name, box, data) {
     if (this._downstreams[name]) {
-      this._downstreams[name].handle(box, data, callback)
+      this._downstreams[name].handle(box, data)
     } else if (this._bypass) {
-      this._bypass.handle(box, data, callback)
+      this._bypass.handle(box, data)
     }
   }
 }

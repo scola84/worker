@@ -24,22 +24,14 @@ export class Queuer extends Worker {
     super(options)
 
     this._concurrency = null
-    this._drain = null
     this._handler = null
-    this._name = null
     this._pub = null
     this._queue = null
     this._queuer = null
     this._sub = null
-    this._saturated = null
-    this._unsaturated = null
 
     this.setConcurrency(options.concurrency)
-    this.setDrain(options.drain)
-    this.setName(options.name)
     this.setQueue(options.queue)
-    this.setSaturated(options.saturated)
-    this.setUnsaturated(options.unsaturated)
 
     if (options.handler) {
       this.setHandler(options.handler)
@@ -55,15 +47,11 @@ export class Queuer extends Worker {
   getOptions () {
     return Object.assign(super.getOptions(), {
       concurrency: this._concurrency,
-      drain: this._drain,
       handler: this._handler,
-      name: this._name,
       pub: this._pub,
       queue: this._queue,
       queuer: this._queuer,
-      saturated: this._saturated,
-      sub: this._sub,
-      unsaturated: this._unsaturated
+      sub: this._sub
     })
   }
 
@@ -76,30 +64,12 @@ export class Queuer extends Worker {
     return this
   }
 
-  getDrain () {
-    return this._drain
-  }
-
-  setDrain (value = () => {}) {
-    this._drain = value
-    return this
-  }
-
   getHandler () {
     return this._handler
   }
 
   setHandler (value = null) {
     this._handler = value
-    return this
-  }
-
-  getName () {
-    return this._name
-  }
-
-  setName (value = null) {
-    this._name = value
     return this
   }
 
@@ -130,30 +100,12 @@ export class Queuer extends Worker {
     return this
   }
 
-  getSaturated () {
-    return this._saturated
-  }
-
-  setSaturated (value = () => {}) {
-    this._saturated = value
-    return this
-  }
-
   getSub () {
     return this._sub
   }
 
   setSub (value = null) {
     this._sub = value
-    return this
-  }
-
-  getUnsaturated () {
-    return this._unsaturated
-  }
-
-  setUnsaturated (value = () => {}) {
-    this._unsaturated = value
     return this
   }
 
@@ -165,48 +117,48 @@ export class Queuer extends Worker {
     }
   }
 
+  createBox (callback, data) {
+    const box = { callback }
+
+    const unify = {
+      count: 0,
+      empty: false,
+      total: 1
+    }
+
+    box.unify = box.unify || {}
+    box.unify[this._name] = unify
+
+    return box
+  }
+
   createQueue (box) {
     this._queue = Queuer.createQueue(
       this._concurrency,
       this._name
     )
-
-    this._queue.saturated = () => {
-      this._saturated(box)
-    }
-
-    this._queue.unsaturated = () => {
-      this._unsaturated(box)
-    }
-
-    this._queue.drain = () => {
-      this._drain(box)
-    }
   }
 
   handleRemote (callback) {
     this._handler.rpop(this._name, (error, data) => {
       if (error) {
-        callback()
-        this.log('fail', null, error)
+        callback(error)
         return
       }
 
       if (data === null) {
         callback()
-        this._queue.unsaturated = () => {}
         return
       }
 
       try {
         data = JSON.parse(data)
       } catch (jsonError) {
-        callback()
-        this.log('fail', null, jsonError)
+        callback(jsonError)
         return
       }
 
-      this.pass({}, data, callback)
+      this.pass(this.createBox(callback), data)
     })
   }
 
@@ -219,10 +171,6 @@ export class Queuer extends Worker {
       return
     }
 
-    this._queue.unsaturated = () => {
-      this.pushFromRemote()
-    }
-
     this._queue.push((callback) => {
       this.handleRemote(callback)
     })
@@ -233,12 +181,8 @@ export class Queuer extends Worker {
       this.createQueue(box)
     }
 
-    if (this._queue.length() === this._concurrency) {
-      this._queue.saturated()
-    }
-
     this._queue.push((callback) => {
-      this.pass(box, data, callback)
+      this.pass(this.createBox(callback), data)
     })
   }
 
@@ -261,6 +205,10 @@ export class Queuer extends Worker {
   }
 
   startHandler () {
+    this._queue.unsaturated(() => {
+      this.pushFromRemote()
+    })
+
     const sub = this._handler.duplicate()
 
     sub.on('error', (error) => {

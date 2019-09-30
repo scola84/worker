@@ -5,18 +5,12 @@ export class Unifier extends Worker {
     super(options)
 
     this._collect = null
-    this._name = null
-    this._sync = null
-
     this.setCollect(options.collect)
-    this.setName(options.name)
-    this.setSync(options.sync)
   }
 
   getOptions () {
     return Object.assign(super.getOptions(), {
-      collect: this._collect,
-      name: this._name
+      collect: this._collect
     })
   }
 
@@ -29,49 +23,31 @@ export class Unifier extends Worker {
     return this
   }
 
-  getName () {
-    return this._name
-  }
+  unify (box, data) {
+    if (box.callback) {
+      box.callback()
+    }
 
-  setName (value = 'default') {
-    this._name = value
-    return this
-  }
-
-  getSync () {
-    return this._sync
-  }
-
-  setSync (value = false) {
-    this._sync = value
-    return this
-  }
-
-  act (box, data, callback) {
     const unify = box.unify[this._name]
-    unify.count += 1
 
     if (this._collect === true) {
       unify.data = unify.data || []
 
       if (unify.empty === false) {
         const index = typeof data.index === 'undefined'
-          ? unify.data.length : data.index
+          ? unify.data.length
+          : data.index
 
         unify.data[index] = data
       }
     }
 
+    unify.count += 1
+
     const pass = unify.empty === true ||
       unify.count % unify.total === 0
 
-    this.log('info', box, data, unify)
-
-    if (pass === false) {
-      if (this._sync) {
-        callback()
-      }
-    } else if (pass === true) {
+    if (pass === true) {
       if (this._collect === true) {
         data = unify.data
         delete unify.data
@@ -80,9 +56,13 @@ export class Unifier extends Worker {
       if (this._wrap === true) {
         box = box.box
       }
-
-      this.pass(box, data, callback)
     }
+
+    return [box, data]
+  }
+
+  act (box, data) {
+    this.pass(...this.unify(box, data))
   }
 
   decide (box, data) {
@@ -93,7 +73,7 @@ export class Unifier extends Worker {
     return typeof box.unify !== 'undefined'
   }
 
-  err (box, error, callback) {
-    this.handle(box, error, callback)
+  err (box, error) {
+    this.fail(...this.unify(box, error))
   }
 }

@@ -86,8 +86,6 @@ export class Timer extends Worker {
 
   makeInterval (name, interval) {
     setInterval(() => {
-      this.log('info', 'interval', name, interval)
-
       this.execute({
         interval: name
       })
@@ -96,8 +94,6 @@ export class Timer extends Worker {
 
   makeSchedule (name, schedule) {
     cron.schedule(schedule, () => {
-      this.log('info', 'schedule', name, schedule)
-
       this.execute({
         schedule: name
       })
