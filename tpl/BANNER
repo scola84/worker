@@ -1,0 +1,6 @@
+@license <%= pkg.name %>@<%= pkg.version %>
+
+Copyright (c) <%= pkg.author %>
+
+The licenses of this package and its dependencies can be found
+in the LICENSE file in the root directory of this source tree.
